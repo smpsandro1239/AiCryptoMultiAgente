@@ -1,0 +1,5 @@
+ccxt
+pyyaml
+pandas
+numpy
+matplotlib
