@@ -33,16 +33,16 @@ class SemanticMemory:
         self.memory.append({"key": key, "value": value})
 
     def query(self, query_str: str):
-        # Placeholder for semantic search
         return [m for m in self.memory if query_str in str(m["value"])]
 
 class Context:
-    def __init__(self, timestamp=None, regime=None, portfolio=None, market_data=None, memory=None):
+    def __init__(self, timestamp=None, regime=None, portfolio=None, market_data=None, memory=None, config=None):
         self.timestamp = timestamp
         self.regime = regime
         self.portfolio = portfolio
         self.market_data = market_data
         self.memory = memory or SemanticMemory()
+        self.config = config or {}
 
 class Orchestrator:
     def __init__(self, agents, context, event_bus, logger):
@@ -54,9 +54,6 @@ class Orchestrator:
     async def step(self, market_snapshot):
         self.context.market_data = market_snapshot
         self.context.timestamp = market_snapshot.get("timestamp")
-
-        # In a real scenario, agents would react to events.
-        # Here we trigger them in a simplified loop or via event bus.
         await self.event_bus.publish("market_update", market_snapshot)
 
 class Backtester:
