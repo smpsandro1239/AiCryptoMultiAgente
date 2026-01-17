@@ -65,12 +65,20 @@ class ExecutionAgent(BaseAgent):
         self.context.memory.add("execution", {"symbol": symbol, "side": side, "type": "VWAP", "usd_size": total_usd_size})
 
     def update_portfolio(self, symbol, side, qty, price):
+        # Apply slippage and commission if in backtest mode
+        bt_cfg = self.context.config.get("backtest", {})
+        slippage = bt_cfg.get("slippage", 0.0)
+        commission = bt_cfg.get("commission", 0.0)
+
+        executed_price = price * (1 + slippage) if side == "BUY" else price * (1 - slippage)
+
         if side == "BUY":
-            cost = qty * price
-            self.context.portfolio.update_balance(self.context.portfolio.base_currency, -cost)
+            cost = qty * executed_price
+            comm_cost = cost * commission
+            self.context.portfolio.update_balance(self.context.portfolio.base_currency, -(cost + comm_cost))
             self.context.portfolio.update_position(symbol, qty)
         elif side == "SELL":
-            # For simplicity, if we don't have enough qty, we sell what we have or short (depending on settings)
-            # Here we just execute as requested
-            self.context.portfolio.update_balance(self.context.portfolio.base_currency, qty * price)
+            revenue = qty * executed_price
+            comm_cost = revenue * commission
+            self.context.portfolio.update_balance(self.context.portfolio.base_currency, (revenue - comm_cost))
             self.context.portfolio.update_position(symbol, -qty)

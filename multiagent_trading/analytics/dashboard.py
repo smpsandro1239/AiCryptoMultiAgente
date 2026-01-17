@@ -34,19 +34,22 @@ def main():
     if data:
         pnl_df = pd.DataFrame(data["pnl"])
         memory_df = pd.DataFrame([m for m in data["memory"]])
+        metrics = data.get("metrics", {})
 
-        tab1, tab2, tab3 = st.tabs(["Performance", "Executions", "Microstructure"])
+        tab1, tab2, tab3, tab4 = st.tabs(["Performance", "Executions", "Microstructure", "Notifications"])
 
         with tab1:
-            col1, col2, col3 = st.columns(3)
+            col1, col2, col3, col4 = st.columns(4)
             with col1:
                 final_val = pnl_df['value'].iloc[-1]
                 initial_val = pnl_df['value'].iloc[0]
-                st.metric("Final Portfolio Value", f"${final_val:,.2f}", delta=f"{((final_val/initial_val)-1)*100:.2f}%")
+                st.metric("Portfolio Value", f"${final_val:,.2f}", delta=f"{((final_val/initial_val)-1)*100:.2f}%")
             with col2:
-                st.metric("Total Trades", len(memory_df[memory_df['key'] == 'execution']))
+                st.metric("Sharpe Ratio", f"{metrics.get('sharpe_ratio', 0):.2f}")
             with col3:
-                st.metric("Data Points", len(pnl_df))
+                st.metric("Max Drawdown", f"{metrics.get('max_drawdown', 0)*100:.2f}%")
+            with col4:
+                st.metric("Total Trades", len(memory_df[memory_df['key'] == 'execution']))
 
             st.subheader("Equity Curve")
             st.line_chart(pnl_df.set_index('timestamp')['value'])
@@ -76,8 +79,6 @@ def main():
 
         with tab3:
             st.subheader("Microstructure Analysis")
-            # In a real scenario, we would save microstructure logs to the results JSON
-            # For now, we show a mock analysis view
             st.info("Microstructure analysis tracks order book imbalance and bid-ask spreads.")
             mock_ms = pd.DataFrame({
                 "Symbol": ["BTC/USDT", "ETH/USDT"],
@@ -86,6 +87,18 @@ def main():
                 "Liquidity": ["High", "High"]
             })
             st.table(mock_ms)
+
+        with tab4:
+            st.subheader("System Notifications")
+            notifications = []
+            for m in data["memory"]:
+                if m["key"] == "notification":
+                    notifications.append(m["value"])
+            if notifications:
+                for n in reversed(notifications):
+                    st.info(n)
+            else:
+                st.write("No notifications logged.")
 
     else:
         st.warning(f"File {results_file} not found. Run a backtest first.")

@@ -59,14 +59,24 @@ class Orchestrator:
         await self.event_bus.publish("market_update", market_snapshot_batch)
 
 class Backtester:
-    def __init__(self, orchestrator, data_feed, context):
+    def __init__(self, orchestrator, data_feed, context, commission=0.001, slippage=0.0005):
         self.orchestrator = orchestrator
         self.data_feed = data_feed
         self.context = context
+        self.commission = commission
+        self.slippage = slippage
         self.results = {"pnl": []}
 
     async def run(self, save_path=None):
         import json
+        from multiagent_trading.analytics.metrics import get_performance_metrics
+
+        # Inject commission and slippage into config for agents to use if needed
+        self.context.config["backtest"] = {
+            "commission": self.commission,
+            "slippage": self.slippage
+        }
+
         for tick_batch in self.data_feed:
             await self.orchestrator.step(tick_batch)
             market_prices = {s: d.get("close", 0) for s, d in self.context.market_data.items()}
@@ -77,10 +87,12 @@ class Backtester:
             })
 
         if save_path:
+            metrics = get_performance_metrics(self.results["pnl"])
             with open(save_path, "w") as f:
                 json.dump({
                     "pnl": self.results["pnl"],
-                    "memory": self.context.memory.memory
+                    "memory": self.context.memory.memory,
+                    "metrics": metrics
                 }, f, indent=4)
 
         return self.results

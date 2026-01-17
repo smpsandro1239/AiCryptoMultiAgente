@@ -23,3 +23,9 @@
 - Strategy marketplace
 - Cloud deployment templates
 - Full documentation website
+
+## v1.1
+- Sentiment Analysis (News/Social Media)
+- Performance Analytics (Sharpe, Sortino, MDD)
+- Notification System (Webhooks)
+- Improved Backtester (Commission, Slippage)
