@@ -48,6 +48,12 @@
 - High-Frequency Trading (Market Making)
 - Cross-Agent Memory Vectorization
 
+## v3.0
+- Cross-Exchange Arbitrage Agent
+- DeFi Yield Monitoring Agent
+- Performance Attribution (PnL Factors)
+- Multi-Asset Yield Optimization
+
 ## v2.1
 - Advanced Exit Logic (Stop Loss / Take Profit)
 - Interactive Trade Visualization (Plotly)

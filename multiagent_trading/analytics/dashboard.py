@@ -49,7 +49,7 @@ def main():
         memory_df = pd.DataFrame([m for m in data["memory"]])
         metrics = data.get("metrics", {})
 
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Performance", "Executions", "AI Reasoning Audit", "Notifications", "Control Panel"])
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Performance", "Executions", "AI Reasoning", "Market Insights", "DeFi & Yield", "Control Panel"])
 
         with tab1:
             col1, col2, col3, col4 = st.columns(4)
@@ -67,25 +67,19 @@ def main():
             st.subheader("Equity Curve")
             st.line_chart(pnl_df.set_index('timestamp')['value'])
 
-            # Interactive Trade Plot
             st.subheader("Trade Visualization")
-            # We need price history. In a real scenario, this would be saved in results.
-            # For now, let's try to reconstruct a mock one or use the PnL if price isn't there.
-            st.info("Interactive charts show trade entries/exits on price history.")
             trades = [m['value'] for m in data['memory'] if m['key'] == 'execution']
             if trades:
-                # Mocking a price history for the visual
-                mock_prices = pd.DataFrame({
-                    "timestamp": pnl_df["timestamp"],
-                    "close": [40000 + i*100 for i in range(len(pnl_df))]
-                })
+                mock_prices = pd.DataFrame({"timestamp": pnl_df["timestamp"], "close": [40000 + i*100 for i in range(len(pnl_df))]})
                 fig = create_trade_plot(mock_prices, trades)
                 st.plotly_chart(fig, use_container_width=True)
 
-            st.subheader("Trade Replay")
-            tick_index = st.slider("Select Tick", 0, len(pnl_df)-1, 0)
-            st.write(f"State at Tick {tick_index}:")
-            st.json(pnl_df.iloc[tick_index].to_dict())
+            st.subheader("PnL Attribution")
+            attr = [m['value'] for m in data['memory'] if m['key'] == 'pnl_attribution']
+            if attr:
+                st.bar_chart(pd.Series(attr[-1]))
+            else:
+                st.info("No PnL attribution data found.")
 
         with tab2:
             st.subheader("Agent Execution Log")
@@ -97,46 +91,42 @@ def main():
                         "Time": val.get("timestamp"),
                         "Symbol": val.get("symbol"),
                         "Side": val.get("side"),
-                        "Type": val.get("type"),
                         "Price": val.get("price"),
-                        "Qty": val.get("qty", val.get("usd_size", "N/A"))
+                        "PnL": val.get("pnl", 0)
                     })
             if executions:
                 st.dataframe(pd.DataFrame(executions))
-            else:
-                st.info("No executions found in memory.")
 
         with tab3:
             st.subheader("AI Reasoning Audit")
-            audit_log = []
-            for m in data["memory"]:
-                if m["key"] == "execution":
-                    val = m["value"]
-                    audit_log.append({
-                        "Symbol": val.get("symbol"),
-                        "Side": val.get("side"),
-                        "Rationale": val.get("rationale")
-                    })
+            audit_log = [m['value'] for m in data["memory"] if m["key"] == "execution"]
             if audit_log:
                 for entry in audit_log:
-                    with st.expander(f"{entry['Side']} {entry['Symbol']} Decision"):
-                        st.write(entry['Rationale'])
-            else:
-                st.info("No reasoning audit found.")
+                    with st.expander(f"{entry['Side']} {entry['Symbol']} - {entry.get('timestamp')}"):
+                        st.write(entry.get('rationale'))
 
         with tab4:
-            st.subheader("System Notifications")
-            notifications = []
-            for m in data["memory"]:
-                if m["key"] == "notification":
-                    notifications.append(m["value"])
-            if notifications:
-                for n in reversed(notifications):
-                    st.info(n)
-            else:
-                st.write("No notifications logged.")
+            st.subheader("Arbitrage & Microstructure")
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.write("Arbitrage Signals")
+                arbs = [m['value'] for m in data['memory'] if m['key'] == 'arbitrage_signal']
+                if arbs: st.dataframe(pd.DataFrame(arbs))
+                else: st.info("No arbitrage signals.")
+            with col_b:
+                st.write("Microstructure Logs")
+                st.info("Tracks order book imbalance and bid-ask spreads.")
 
         with tab5:
+            st.subheader("DeFi Yield Farming & Staking")
+            yields = [m['value'] for m in data['memory'] if m['key'] == 'defi_opportunity']
+            if yields:
+                st.write("Active Yield Opportunities")
+                st.dataframe(pd.DataFrame(yields))
+            else:
+                st.info("No DeFi opportunities logged.")
+
+        with tab6:
             st.subheader("Remote Control Panel")
             with st.form("manual_order"):
                 symbol = st.selectbox("Symbol", ["BTC/USDT", "ETH/USDT"])
@@ -152,7 +142,7 @@ def main():
                         st.error("Could not reach API")
 
     else:
-        st.warning(f"File {results_file} not found. Run a backtest first.")
+        st.warning(f"File {results_file} not found.")
 
 if __name__ == "__main__":
     main()
