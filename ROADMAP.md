@@ -35,3 +35,9 @@
 - Risk Parity Optimization
 - REST API (FastAPI) for remote control
 - Dynamic Manual Order execution
+
+## v1.3
+- Portfolio Rebalancing (Target Weights)
+- Advanced Multi-Agent Strategy Examples
+- Q-Learning Reinforcement Learning Agent
+- REST API Documentation
