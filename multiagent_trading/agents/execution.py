@@ -32,6 +32,7 @@ class ExecutionAgent(BaseAgent):
             "type": "MARKET",
             "price": price,
             "qty": qty,
+            "timestamp": self.context.timestamp,
             "rationale": opp.get("rationale", "No rationale provided.")
         })
 

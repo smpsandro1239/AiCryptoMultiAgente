@@ -47,3 +47,9 @@
 - Qualitative Decision Auditing
 - High-Frequency Trading (Market Making)
 - Cross-Agent Memory Vectorization
+
+## v2.1
+- Advanced Exit Logic (Stop Loss / Take Profit)
+- Interactive Trade Visualization (Plotly)
+- Real-time Data Integration (CCXT Live Fetch)
+- Enhanced Qualitative Reasoning Auditing

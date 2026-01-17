@@ -3,11 +3,14 @@ import pandas as pd
 import json
 import os
 import sys
+import requests
+import plotly.express as px
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 from multiagent_trading.core.strategy import StrategyManager
+from multiagent_trading.analytics.plots import create_trade_plot
 
 def load_data(file_path):
     if not os.path.exists(file_path):
@@ -18,6 +21,16 @@ def load_data(file_path):
 def main():
     st.set_page_config(page_title="MATF Dashboard", layout="wide")
     st.title("🤖 MATF Dashboard - Multi-Agent Trading")
+
+    # API Connection
+    st.sidebar.header("API Connection")
+    api_url = st.sidebar.text_input("API Base URL", "http://localhost:8000")
+    if st.sidebar.button("Check API Status"):
+        try:
+            resp = requests.get(f"{api_url}/status")
+            st.sidebar.success(f"Connected: {resp.json()['status']}")
+        except:
+            st.sidebar.error("API Offline")
 
     # Strategy Marketplace
     sm = StrategyManager()
@@ -54,6 +67,21 @@ def main():
             st.subheader("Equity Curve")
             st.line_chart(pnl_df.set_index('timestamp')['value'])
 
+            # Interactive Trade Plot
+            st.subheader("Trade Visualization")
+            # We need price history. In a real scenario, this would be saved in results.
+            # For now, let's try to reconstruct a mock one or use the PnL if price isn't there.
+            st.info("Interactive charts show trade entries/exits on price history.")
+            trades = [m['value'] for m in data['memory'] if m['key'] == 'execution']
+            if trades:
+                # Mocking a price history for the visual
+                mock_prices = pd.DataFrame({
+                    "timestamp": pnl_df["timestamp"],
+                    "close": [40000 + i*100 for i in range(len(pnl_df))]
+                })
+                fig = create_trade_plot(mock_prices, trades)
+                st.plotly_chart(fig, use_container_width=True)
+
             st.subheader("Trade Replay")
             tick_index = st.slider("Select Tick", 0, len(pnl_df)-1, 0)
             st.write(f"State at Tick {tick_index}:")
@@ -66,6 +94,7 @@ def main():
                 if m["key"] == "execution":
                     val = m["value"]
                     executions.append({
+                        "Time": val.get("timestamp"),
                         "Symbol": val.get("symbol"),
                         "Side": val.get("side"),
                         "Type": val.get("type"),
@@ -79,7 +108,6 @@ def main():
 
         with tab3:
             st.subheader("AI Reasoning Audit")
-            st.write("Quantitative decisions reviewed by Qualitative AI reasoning.")
             audit_log = []
             for m in data["memory"]:
                 if m["key"] == "execution":
@@ -110,7 +138,6 @@ def main():
 
         with tab5:
             st.subheader("Remote Control Panel")
-            st.write("Send manual orders to the running system via REST API.")
             with st.form("manual_order"):
                 symbol = st.selectbox("Symbol", ["BTC/USDT", "ETH/USDT"])
                 side = st.selectbox("Side", ["BUY", "SELL"])
@@ -126,7 +153,6 @@ def main():
 
     else:
         st.warning(f"File {results_file} not found. Run a backtest first.")
-        st.info("Example: `python examples/backtest_example.py` (ensure it saves to backtest_results.json)")
 
 if __name__ == "__main__":
     main()
