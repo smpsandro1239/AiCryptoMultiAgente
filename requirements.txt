@@ -3,3 +3,6 @@ pyyaml
 pandas
 numpy
 matplotlib
+streamlit
+sphinx
+sphinx-rtd-theme
