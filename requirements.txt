@@ -6,3 +6,5 @@ matplotlib
 streamlit
 sphinx
 sphinx-rtd-theme
+scikit-learn
+scipy
