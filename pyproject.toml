@@ -13,6 +13,12 @@ dependencies = [
     "streamlit",
     "sphinx",
     "sphinx-rtd-theme",
+    "scikit-learn",
+    "scipy",
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "requests",
 ]
 
 [build-system]

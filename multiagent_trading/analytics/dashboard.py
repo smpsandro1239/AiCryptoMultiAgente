@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import os
 import sys
+import requests
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -18,6 +19,16 @@ def load_data(file_path):
 def main():
     st.set_page_config(page_title="MATF Dashboard", layout="wide")
     st.title("🤖 MATF Dashboard - Multi-Agent Trading")
+
+    # API Connection
+    st.sidebar.header("API Connection")
+    api_url = st.sidebar.text_input("API Base URL", "http://localhost:8000")
+    if st.sidebar.button("Check API Status"):
+        try:
+            resp = requests.get(f"{api_url}/status")
+            st.sidebar.success(f"Connected: {resp.json()['status']}")
+        except:
+            st.sidebar.error("API Offline")
 
     # Strategy Marketplace
     sm = StrategyManager()
@@ -36,7 +47,7 @@ def main():
         memory_df = pd.DataFrame([m for m in data["memory"]])
         metrics = data.get("metrics", {})
 
-        tab1, tab2, tab3, tab4 = st.tabs(["Performance", "Executions", "Microstructure", "Notifications"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Performance", "Executions", "Microstructure", "Notifications", "Control Panel"])
 
         with tab1:
             col1, col2, col3, col4 = st.columns(4)
@@ -99,6 +110,21 @@ def main():
                     st.info(n)
             else:
                 st.write("No notifications logged.")
+
+        with tab5:
+            st.subheader("Remote Control Panel")
+            st.write("Send manual orders to the running system via REST API.")
+            with st.form("manual_order"):
+                symbol = st.selectbox("Symbol", ["BTC/USDT", "ETH/USDT"])
+                side = st.selectbox("Side", ["BUY", "SELL"])
+                amount = st.number_input("Amount (USD)", min_value=10.0, value=100.0)
+                submit = st.form_submit_button("Send Order")
+                if submit:
+                    try:
+                        r = requests.post(f"{api_url}/trade/manual", params={"symbol": symbol, "side": side, "amount": amount})
+                        st.success(f"Order submitted: {r.json()}")
+                    except:
+                        st.error("Could not reach API")
 
     else:
         st.warning(f"File {results_file} not found. Run a backtest first.")

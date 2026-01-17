@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from typing import Dict, Any, List
+from multiagent_trading.core.memory import VectorMemory
 
 class EventBus:
     def __init__(self):
@@ -42,6 +43,7 @@ class Context:
         self.portfolio = portfolio
         self.market_data = market_data or {}
         self.memory = memory or SemanticMemory()
+        self.vector_memory = VectorMemory()
         self.config = config or {}
 
 class Orchestrator:

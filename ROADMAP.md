@@ -29,3 +29,9 @@
 - Performance Analytics (Sharpe, Sortino, MDD)
 - Notification System (Webhooks)
 - Improved Backtester (Commission, Slippage)
+
+## v1.2
+- Vector Memory (Regime Embeddings)
+- Risk Parity Optimization
+- REST API (FastAPI) for remote control
+- Dynamic Manual Order execution

@@ -8,3 +8,7 @@ sphinx
 sphinx-rtd-theme
 scikit-learn
 scipy
+fastapi
+uvicorn
+pydantic
+requests
