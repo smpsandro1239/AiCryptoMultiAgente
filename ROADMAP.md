@@ -41,3 +41,9 @@
 - Advanced Multi-Agent Strategy Examples
 - Q-Learning Reinforcement Learning Agent
 - REST API Documentation
+
+## v2.0
+- AI Reasoning (LLM Integration)
+- Qualitative Decision Auditing
+- High-Frequency Trading (Market Making)
+- Cross-Agent Memory Vectorization

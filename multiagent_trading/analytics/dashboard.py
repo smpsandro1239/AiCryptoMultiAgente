@@ -3,7 +3,6 @@ import pandas as pd
 import json
 import os
 import sys
-import requests
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -19,16 +18,6 @@ def load_data(file_path):
 def main():
     st.set_page_config(page_title="MATF Dashboard", layout="wide")
     st.title("🤖 MATF Dashboard - Multi-Agent Trading")
-
-    # API Connection
-    st.sidebar.header("API Connection")
-    api_url = st.sidebar.text_input("API Base URL", "http://localhost:8000")
-    if st.sidebar.button("Check API Status"):
-        try:
-            resp = requests.get(f"{api_url}/status")
-            st.sidebar.success(f"Connected: {resp.json()['status']}")
-        except:
-            st.sidebar.error("API Offline")
 
     # Strategy Marketplace
     sm = StrategyManager()
@@ -47,7 +36,7 @@ def main():
         memory_df = pd.DataFrame([m for m in data["memory"]])
         metrics = data.get("metrics", {})
 
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Performance", "Executions", "Microstructure", "Notifications", "Control Panel"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Performance", "Executions", "AI Reasoning Audit", "Notifications", "Control Panel"])
 
         with tab1:
             col1, col2, col3, col4 = st.columns(4)
@@ -89,15 +78,23 @@ def main():
                 st.info("No executions found in memory.")
 
         with tab3:
-            st.subheader("Microstructure Analysis")
-            st.info("Microstructure analysis tracks order book imbalance and bid-ask spreads.")
-            mock_ms = pd.DataFrame({
-                "Symbol": ["BTC/USDT", "ETH/USDT"],
-                "Spread": [0.0001, 0.00015],
-                "Imbalance": [0.15, -0.05],
-                "Liquidity": ["High", "High"]
-            })
-            st.table(mock_ms)
+            st.subheader("AI Reasoning Audit")
+            st.write("Quantitative decisions reviewed by Qualitative AI reasoning.")
+            audit_log = []
+            for m in data["memory"]:
+                if m["key"] == "execution":
+                    val = m["value"]
+                    audit_log.append({
+                        "Symbol": val.get("symbol"),
+                        "Side": val.get("side"),
+                        "Rationale": val.get("rationale")
+                    })
+            if audit_log:
+                for entry in audit_log:
+                    with st.expander(f"{entry['Side']} {entry['Symbol']} Decision"):
+                        st.write(entry['Rationale'])
+            else:
+                st.info("No reasoning audit found.")
 
         with tab4:
             st.subheader("System Notifications")
@@ -121,6 +118,7 @@ def main():
                 submit = st.form_submit_button("Send Order")
                 if submit:
                     try:
+                        api_url = "http://localhost:8000"
                         r = requests.post(f"{api_url}/trade/manual", params={"symbol": symbol, "side": side, "amount": amount})
                         st.success(f"Order submitted: {r.json()}")
                     except:

@@ -26,7 +26,14 @@ class ExecutionAgent(BaseAgent):
         qty = usd_size / price if price > 0 else 0
 
         self.update_portfolio(symbol, side, qty, price)
-        self.context.memory.add("execution", {"symbol": symbol, "side": side, "type": "MARKET", "price": price, "qty": qty})
+        self.context.memory.add("execution", {
+            "symbol": symbol,
+            "side": side,
+            "type": "MARKET",
+            "price": price,
+            "qty": qty,
+            "rationale": opp.get("rationale", "No rationale provided.")
+        })
 
     async def execute_twap(self, opp):
         symbol = opp["symbol"]
@@ -41,7 +48,13 @@ class ExecutionAgent(BaseAgent):
             qty_chunk = usd_chunk / price if price > 0 else 0
             self.update_portfolio(symbol, side, qty_chunk, price)
             await asyncio.sleep(0.01)
-        self.context.memory.add("execution", {"symbol": symbol, "side": side, "type": "TWAP", "usd_size": total_usd_size})
+        self.context.memory.add("execution", {
+            "symbol": symbol,
+            "side": side,
+            "type": "TWAP",
+            "usd_size": total_usd_size,
+            "rationale": opp.get("rationale", "No rationale provided.")
+        })
 
     async def execute_vwap(self, opp):
         symbol = opp["symbol"]
@@ -62,7 +75,13 @@ class ExecutionAgent(BaseAgent):
             self.update_portfolio(symbol, side, qty_chunk, price)
             await asyncio.sleep(0.01)
 
-        self.context.memory.add("execution", {"symbol": symbol, "side": side, "type": "VWAP", "usd_size": total_usd_size})
+        self.context.memory.add("execution", {
+            "symbol": symbol,
+            "side": side,
+            "type": "VWAP",
+            "usd_size": total_usd_size,
+            "rationale": opp.get("rationale", "No rationale provided.")
+        })
 
     def update_portfolio(self, symbol, side, qty, price):
         # Apply slippage and commission if in backtest mode

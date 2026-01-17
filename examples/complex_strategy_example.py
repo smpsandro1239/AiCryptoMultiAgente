@@ -14,6 +14,7 @@ from multiagent_trading.agents.optimizer import PortfolioOptimizerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.agents.execution import ExecutionAgent
 from multiagent_trading.agents.notifications import NotificationAgent
+from multiagent_trading.agents.llm_agent import LLMAgent
 from multiagent_trading.models.portfolio import PortfolioState
 
 async def main():
@@ -41,6 +42,7 @@ async def main():
         "risk": RiskAgent("risk", config, context, event_bus, logger),
         "optimizer": PortfolioOptimizerAgent("optimizer", config, context, event_bus, logger),
         "supervisor": SupervisorAgent("supervisor", config, context, event_bus, logger),
+        "llm": LLMAgent("llm_reasoner", config, context, event_bus, logger),
         "execution": ExecutionAgent("execution", config, context, event_bus, logger),
         "notifications": NotificationAgent("notifier", config, context, event_bus, logger)
     }

@@ -212,7 +212,8 @@
                 "symbol": "BTC/USDT",
                 "side": "SELL",
                 "type": "VWAP",
-                "usd_size": 1000.0
+                "usd_size": 1000.0,
+                "rationale": "Based on the None market regime and a sentiment score of 0.32, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -225,7 +226,8 @@
                 "symbol": "ETH/USDT",
                 "side": "SELL",
                 "type": "VWAP",
-                "usd_size": 1000.0
+                "usd_size": 1000.0,
+                "rationale": "Based on the None market regime and a sentiment score of -0.65, this ETH/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -238,7 +240,8 @@
                 "symbol": "BTC/USDT",
                 "side": "SELL",
                 "type": "VWAP",
-                "usd_size": 999.9700099999999
+                "usd_size": 999.9700099999999,
+                "rationale": "Based on the None market regime and a sentiment score of 0.70, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -251,7 +254,8 @@
                 "symbol": "ETH/USDT",
                 "side": "SELL",
                 "type": "VWAP",
-                "usd_size": 999.8579280710591
+                "usd_size": 999.8579280710591,
+                "rationale": "Based on the None market regime and a sentiment score of 0.67, this ETH/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -264,7 +268,8 @@
                 "symbol": "BTC/USDT",
                 "side": "SELL",
                 "type": "VWAP",
-                "usd_size": 1000.2252644516253
+                "usd_size": 1000.2252644516253,
+                "rationale": "Based on the None market regime and a sentiment score of -0.92, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
