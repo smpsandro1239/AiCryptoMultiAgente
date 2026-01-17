@@ -65,10 +65,22 @@ class Backtester:
         self.context = context
         self.results = {"pnl": []}
 
-    async def run(self):
+    async def run(self, save_path=None):
+        import json
         for tick_batch in self.data_feed:
             await self.orchestrator.step(tick_batch)
             market_prices = {s: d.get("close", 0) for s, d in self.context.market_data.items()}
             self.context.portfolio.get_total_value(market_prices)
-            self.results["pnl"].append(self.context.portfolio.total_value)
+            self.results["pnl"].append({
+                "timestamp": self.context.timestamp,
+                "value": self.context.portfolio.total_value
+            })
+
+        if save_path:
+            with open(save_path, "w") as f:
+                json.dump({
+                    "pnl": self.results["pnl"],
+                    "memory": self.context.memory.memory
+                }, f, indent=4)
+
         return self.results

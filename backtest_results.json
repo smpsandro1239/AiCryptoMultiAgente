@@ -1,0 +1,38 @@
+{
+    "pnl": [
+        {
+            "timestamp": 1,
+            "value": 10000.0
+        },
+        {
+            "timestamp": 2,
+            "value": 10000.0
+        },
+        {
+            "timestamp": 3,
+            "value": 10008.553791887125
+        }
+    ],
+    "memory": [
+        {
+            "key": "execution",
+            "value": {
+                "symbol": "BTC/USDT",
+                "side": "SELL",
+                "type": "MARKET",
+                "price": 40500,
+                "qty": 0.0024691358024691358
+            }
+        },
+        {
+            "key": "execution",
+            "value": {
+                "symbol": "ETH/USDT",
+                "side": "SELL",
+                "type": "MARKET",
+                "price": 2100,
+                "qty": 0.047619047619047616
+            }
+        }
+    ]
+}

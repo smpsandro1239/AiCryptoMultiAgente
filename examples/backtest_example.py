@@ -58,9 +58,11 @@ async def main():
     ]
 
     bt = Backtester(orchestrator, data_feed, context)
-    results = await bt.run()
+    results = await bt.run(save_path="backtest_results.json")
 
-    report = generate_report(results, context.memory)
+    # Adapt results for report (report expects list of values)
+    legacy_results = {"pnl": [p["value"] for p in results["pnl"]]}
+    report = generate_report(legacy_results, context.memory)
     print(report)
 
 if __name__ == "__main__":
