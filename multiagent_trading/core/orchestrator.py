@@ -40,7 +40,7 @@ class Context:
         self.timestamp = timestamp
         self.regime = regime
         self.portfolio = portfolio
-        self.market_data = market_data
+        self.market_data = market_data or {} # {symbol: data}
         self.memory = memory or SemanticMemory()
         self.config = config or {}
 
@@ -51,10 +51,19 @@ class Orchestrator:
         self.event_bus = event_bus
         self.logger = logger
 
-    async def step(self, market_snapshot):
-        self.context.market_data = market_snapshot
-        self.context.timestamp = market_snapshot.get("timestamp")
-        await self.event_bus.publish("market_update", market_snapshot)
+    async def step(self, market_snapshot_batch: Dict[str, Any]):
+        """
+        market_snapshot_batch: { 'BTC/USDT': {...}, 'ETH/USDT': {...} }
+        Each snapshot should contain 'timestamp', 'close', etc.
+        """
+        self.context.market_data.update(market_snapshot_batch)
+
+        # Use timestamp from the first symbol in the batch for simplicity
+        if market_snapshot_batch:
+            first_symbol = next(iter(market_snapshot_batch))
+            self.context.timestamp = market_snapshot_batch[first_symbol].get("timestamp")
+
+        await self.event_bus.publish("market_update", market_snapshot_batch)
 
 class Backtester:
     def __init__(self, orchestrator, data_feed, context):
@@ -64,7 +73,10 @@ class Backtester:
         self.results = {"pnl": []}
 
     async def run(self):
-        for tick in self.data_feed:
-            await self.orchestrator.step(tick)
+        for tick_batch in self.data_feed:
+            await self.orchestrator.step(tick_batch)
+            # Update portfolio value based on latest market data
+            market_prices = {s: d.get("close", 0) for s, d in self.context.market_data.items()}
+            self.context.portfolio.get_total_value(market_prices)
             self.results["pnl"].append(self.context.portfolio.total_value)
         return self.results

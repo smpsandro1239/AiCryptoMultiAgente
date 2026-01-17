@@ -7,8 +7,9 @@ class RiskAgent(BaseAgent):
 
     async def on_opportunity(self, opp):
         self.logger.info(f"{self.name} assessing risk for {opp['symbol']}...")
-        # Policy-based risk assessment
-        max_exposure = self.config.get("risk", {}).get("max_exposure", 0.1)
+
+        # Determine position size as 1% of portfolio value
         opp["risk_ok"] = True
-        opp["position_size"] = self.context.portfolio.total_value * 0.02 # 2% risk
+        opp["position_size"] = self.context.portfolio.total_value * 0.01
+
         await self.event_bus.publish("risk_assessed", opp)

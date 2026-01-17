@@ -21,11 +21,20 @@ MATF uses an event-driven architecture powered by an asynchronous event bus. Age
 
 Agents
 ------
-- **RegimeAgent**: Identifies market conditions.
-- **ScannerAgent**: Finds trading opportunities.
-- **RiskAgent**: Manages position sizing and risk exposure.
-- **SupervisorAgent**: Validates trades.
-- **ExecutionAgent**: Executes trades on exchanges.
+- **RegimeAgent**: Identifies market conditions (Bull, Bear, Sideways) using MACD and RSI.
+- **ScannerAgent**: Finds trading opportunities across multiple symbols using technical indicators.
+- **RiskAgent**: Manages position sizing and risk exposure per trade.
+- **PortfolioOptimizerAgent**: Optimizes capital allocation across the entire portfolio.
+- **SupervisorAgent**: Validates trades and provides final approval.
+- **ExecutionAgent**: Executes trades using Market or TWAP strategies via CCXT.
+
+Indicators
+----------
+- **EMA**: Exponential Moving Average.
+- **RSI**: Relative Strength Index.
+- **ATR**: Average True Range.
+- **MACD**: Moving Average Convergence Divergence.
+- **Bollinger Bands**: Volatility bands based on standard deviation.
 
 Getting Started
 ---------------

@@ -3,29 +3,42 @@ from multiagent_trading.indicators.rsi import rsi
 from multiagent_trading.indicators.ema import ema
 
 class ScannerAgent(BaseAgent):
-    async def on_market_update(self, data):
-        self.logger.info(f"{self.name} scanning for opportunities...")
+    async def on_market_update(self, data_batch):
+        """
+        data_batch: { symbol: {close, ...} }
+        """
+        self.logger.info(f"{self.name} scanning for opportunities in {list(data_batch.keys())}...")
 
-        # In a real scenario, context.market_data would be a list of historical data
-        # for multiple symbols. For this example, we'll assume we have closing prices.
-        # Let's mock a bit of history from the current tick to make indicators work.
-        closes = self.context.config.get("mock_history", [100, 102, 101, 103, 105, 107, 106, 108, 110])
-        closes.append(data.get("close", 110))
+        # Maintain local history per symbol for indicator calculation
+        if not hasattr(self, 'history'):
+            self.history = {}
 
-        rsi_val = rsi(closes, period=7)[-1]
-        ema_val = ema(closes, period=5)[-1]
+        for symbol, data in data_batch.items():
+            if symbol not in self.history:
+                self.history[symbol] = [100.0] * 20 # Mock initial history
 
-        self.logger.info(f"RSI: {rsi_val:.2f}, EMA: {ema_val:.2f}")
+            self.history[symbol].append(data.get("close", 100))
+            if len(self.history[symbol]) > 100:
+                self.history[symbol].pop(0)
 
-        # Simple Mean Reversion logic
-        if rsi_val < 30:
-            opportunity = {"symbol": data.get("symbol", "BTC/USDT"), "side": "BUY", "reason": "RSI Oversold"}
-            await self.event_bus.publish("opportunity_found", opportunity)
-        elif rsi_val > 70:
-            opportunity = {"symbol": data.get("symbol", "BTC/USDT"), "side": "SELL", "reason": "RSI Overbought"}
-            await self.event_bus.publish("opportunity_found", opportunity)
+            # Indicator logic
+            rsi_val = rsi(self.history[symbol], period=14)[-1]
+            ema_val = ema(self.history[symbol], period=20)[-1]
 
-        # Simple Trend Following logic
-        elif data.get("close", 0) > ema_val:
-            opportunity = {"symbol": data.get("symbol", "BTC/USDT"), "side": "BUY", "reason": "Price above EMA"}
-            await self.event_bus.publish("opportunity_found", opportunity)
+            # Simple combined logic
+            if rsi_val < 30 and data.get("close") > ema_val:
+                opportunity = {
+                    "symbol": symbol,
+                    "side": "BUY",
+                    "reason": "RSI Oversold + Above EMA",
+                    "price": data.get("close")
+                }
+                await self.event_bus.publish("opportunity_found", opportunity)
+            elif rsi_val > 70:
+                opportunity = {
+                    "symbol": symbol,
+                    "side": "SELL",
+                    "reason": "RSI Overbought",
+                    "price": data.get("close")
+                }
+                await self.event_bus.publish("opportunity_found", opportunity)

@@ -9,11 +9,11 @@ from multiagent_trading.core.orchestrator import Orchestrator, EventBus, Logger,
 from multiagent_trading.agents.regime import RegimeAgent
 from multiagent_trading.agents.scanner import ScannerAgent
 from multiagent_trading.agents.risk import RiskAgent
+from multiagent_trading.agents.optimizer import PortfolioOptimizerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.agents.execution import ExecutionAgent
 from multiagent_trading.models.portfolio import PortfolioState
 from multiagent_trading.config.loader import load_config
-from multiagent_trading.data.loader import load_ohlcv_csv
 from multiagent_trading.analytics.reporting import generate_report, plot_performance
 
 async def main():
@@ -24,8 +24,8 @@ async def main():
     context = Context(
         timestamp=None,
         regime=None,
-        portfolio=PortfolioState(),
-        market_data=None,
+        portfolio=PortfolioState(initial_value=10000),
+        market_data={},
         memory=SemanticMemory(),
         config=config
     )
@@ -34,21 +34,34 @@ async def main():
         "regime": RegimeAgent("regime", config, context, event_bus, logger),
         "scanner": ScannerAgent("scanner", config, context, event_bus, logger),
         "risk": RiskAgent("risk", config, context, event_bus, logger),
+        "optimizer": PortfolioOptimizerAgent("optimizer", config, context, event_bus, logger),
         "supervisor": SupervisorAgent("supervisor", config, context, event_bus, logger),
         "execution": ExecutionAgent("execution", config, context, event_bus, logger),
     }
 
     orchestrator = Orchestrator(agents, context, event_bus, logger)
 
-    data_feed = load_ohlcv_csv("BTCUSDT_1h.csv")
+    # Multi-symbol mock data
+    data_feed = [
+        {
+            "BTC/USDT": {"timestamp": 1, "close": 40000},
+            "ETH/USDT": {"timestamp": 1, "close": 2000}
+        },
+        {
+            "BTC/USDT": {"timestamp": 2, "close": 40500},
+            "ETH/USDT": {"timestamp": 2, "close": 2100}
+        },
+        {
+            "BTC/USDT": {"timestamp": 3, "close": 38000}, # Significant drop to trigger RSI if we had more data
+            "ETH/USDT": {"timestamp": 3, "close": 2050}
+        }
+    ]
+
     bt = Backtester(orchestrator, data_feed, context)
     results = await bt.run()
 
     report = generate_report(results, context.memory)
     print(report)
-
-    plot_performance(results, "backtest_performance.png")
-    print("Performance plot saved to backtest_performance.png")
 
 if __name__ == "__main__":
     asyncio.run(main())
