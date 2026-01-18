@@ -28,21 +28,35 @@ class Logger:
 
 class SemanticMemory:
     def __init__(self):
-        self.memory = []
+        self.memory_list = []
 
     def add(self, key: str, value: Any):
-        self.memory.append({"key": key, "value": value})
+        self.memory_list.append({"key": key, "value": value})
 
     def query(self, query_str: str):
-        return [m for m in self.memory if query_str.lower() in str(m["value"]).lower()]
+        return [m for m in self.memory_list if query_str.lower() in str(m["value"]).lower()]
+
+    def get_by_key(self, key: str):
+        return [m for m in self.memory_list if m["key"] == key]
+
+    @property
+    def memory(self):
+        return self.memory_list
 
 class Context:
     def __init__(self, timestamp=None, regime=None, portfolio=None, market_data=None, memory=None, config=None):
+        from multiagent_trading.core.memory import PersistentSemanticMemory
         self.timestamp = timestamp
         self.regime = regime
         self.portfolio = portfolio
         self.market_data = market_data or {}
-        self.memory = memory or SemanticMemory()
+
+        # Usar persistência se configurado
+        if config and config.get("persistence", {}).get("enabled"):
+            self.memory = PersistentSemanticMemory(config["persistence"].get("db_path", "memory.db"))
+        else:
+            self.memory = memory or SemanticMemory()
+
         self.vector_memory = VectorMemory()
         self.config = config or {}
 

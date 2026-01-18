@@ -1,67 +1,39 @@
-# Roadmap
+# Roadmap do MATF
 
-## v0.6
-- Multi-symbol scanning
-- Multi-agent collaboration (message passing)
-- Regime embeddings (vector memory)
-- Advanced execution (TWAP/VWAP)
-- Portfolio optimization agent
+## v0.x - Fundações
+- Orquestrador assíncrono e Barramento de Eventos.
+- Agentes base (Regime, Scanner, Risk, Supervisor, Execution).
+- Indicadores técnicos fundamentais.
 
-## v0.7
-- Reinforcement Learning agent
-- Online learning
-- Regime classifier using ML
-- Market microstructure features
+## v1.x - Inteligência e Conetividade
+- Classificação de Regime via ML (Scikit-Learn).
+- Memória Semântica e Vectorial.
+- API REST (FastAPI) e Dashboard (Streamlit).
+- Integração CCXT (Paper Trading).
 
-## v0.8
-- Dashboard (Streamlit)
-- Live monitoring
-- Trade replay system
+## v2.x - Estratégias Avançadas e Risco
+- Execução TWAP e VWAP.
+- Raciocínio Qualitativo via LLM.
+- Análise de Risco (Monte Carlo e VaR).
+- Notificações via Webhooks.
 
-## v1.0
-- Plugin system
-- Strategy marketplace
-- Cloud deployment templates
-- Full documentation website
+## v3.x - Multi-Mercado e Arbitragem
+- Agente de Arbitragem Cross-Exchange.
+- Monitorização de Yields DeFi.
+- Atribuição de Performance (Fatores de PnL).
 
-## v1.1
-- Sentiment Analysis (News/Social Media)
-- Performance Analytics (Sharpe, Sortino, MDD)
-- Notification System (Webhooks)
-- Improved Backtester (Commission, Slippage)
+## v4.x - Alta Frequência e Estabilidade
+- Scalping e Micro-momentum.
+- Suporte para WebSockets.
+- Pipeline de processamento de dados em tempo real.
 
-## v1.2
-- Vector Memory (Regime Embeddings)
-- Risk Parity Optimization
-- REST API (FastAPI) for remote control
-- Dynamic Manual Order execution
+## v5.x - Otimização Matemática e Localização
+- Otimização de Média-Variância (MVO/Markowitz).
+- Tradução integral para Português de Portugal.
+- Refinação da Auditoria IA.
 
-## v1.3
-- Portfolio Rebalancing (Target Weights)
-- Advanced Multi-Agent Strategy Examples
-- Q-Learning Reinforcement Learning Agent
-- REST API Documentation
-
-## v2.0
-- AI Reasoning (LLM Integration)
-- Qualitative Decision Auditing
-- High-Frequency Trading (Market Making)
-- Cross-Agent Memory Vectorization
-
-## v3.0
-- Cross-Exchange Arbitrage Agent
-- DeFi Yield Monitoring Agent
-- Performance Attribution (PnL Factors)
-- Multi-Asset Yield Optimization
-
-## v4.0
-- Risk Analysis Agent (Monte Carlo & VaR)
-- Real-time Data Pipeline (Normalization & Cleaning)
-- WebSocket support for CCXT Pro integration
-- Advanced Risk Stress Testing Visuals
-
-## v2.1
-- Advanced Exit Logic (Stop Loss / Take Profit)
-- Interactive Trade Visualization (Plotly)
-- Real-time Data Integration (CCXT Live Fetch)
-- Enhanced Qualitative Reasoning Auditing
+## v6.x (Atual) - Persistência e Segurança
+- Persistência em Base de Dados (SQLite).
+- Gestão Segura de Chaves de API.
+- Modelo Black-Litterman para Portfólios.
+- Autenticação básica na API.
