@@ -53,6 +53,8 @@ class ExecutionAgent(BaseAgent):
             "symbol": symbol,
             "side": side,
             "type": "TWAP",
+            "price": self.context.market_data.get(symbol, {}).get("close", 100),
+            "timestamp": self.context.timestamp,
             "usd_size": total_usd_size,
             "rationale": opp.get("rationale", "No rationale provided.")
         })
@@ -80,6 +82,8 @@ class ExecutionAgent(BaseAgent):
             "symbol": symbol,
             "side": side,
             "type": "VWAP",
+            "price": self.context.market_data.get(symbol, {}).get("close", 100),
+            "timestamp": self.context.timestamp,
             "usd_size": total_usd_size,
             "rationale": opp.get("rationale", "No rationale provided.")
         })
