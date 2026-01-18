@@ -54,6 +54,12 @@
 - Performance Attribution (PnL Factors)
 - Multi-Asset Yield Optimization
 
+## v4.0
+- Risk Analysis Agent (Monte Carlo & VaR)
+- Real-time Data Pipeline (Normalization & Cleaning)
+- WebSocket support for CCXT Pro integration
+- Advanced Risk Stress Testing Visuals
+
 ## v2.1
 - Advanced Exit Logic (Stop Loss / Take Profit)
 - Interactive Trade Visualization (Plotly)

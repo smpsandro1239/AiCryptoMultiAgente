@@ -5,6 +5,8 @@ import os
 import sys
 import requests
 import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -49,7 +51,7 @@ def main():
         memory_df = pd.DataFrame([m for m in data["memory"]])
         metrics = data.get("metrics", {})
 
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Performance", "Executions", "AI Reasoning", "Market Insights", "DeFi & Yield", "Control Panel"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Performance", "Executions", "AI Reasoning", "Market Insights", "DeFi & Yield", "Risk Stress Testing", "Control Panel"])
 
         with tab1:
             col1, col2, col3, col4 = st.columns(4)
@@ -76,10 +78,7 @@ def main():
 
             st.subheader("PnL Attribution")
             attr = [m['value'] for m in data['memory'] if m['key'] == 'pnl_attribution']
-            if attr:
-                st.bar_chart(pd.Series(attr[-1]))
-            else:
-                st.info("No PnL attribution data found.")
+            if attr: st.bar_chart(pd.Series(attr[-1]))
 
         with tab2:
             st.subheader("Agent Execution Log")
@@ -94,8 +93,7 @@ def main():
                         "Price": val.get("price"),
                         "PnL": val.get("pnl", 0)
                     })
-            if executions:
-                st.dataframe(pd.DataFrame(executions))
+            if executions: st.dataframe(pd.DataFrame(executions))
 
         with tab3:
             st.subheader("AI Reasoning Audit")
@@ -109,24 +107,34 @@ def main():
             st.subheader("Arbitrage & Microstructure")
             col_a, col_b = st.columns(2)
             with col_a:
-                st.write("Arbitrage Signals")
                 arbs = [m['value'] for m in data['memory'] if m['key'] == 'arbitrage_signal']
                 if arbs: st.dataframe(pd.DataFrame(arbs))
-                else: st.info("No arbitrage signals.")
             with col_b:
                 st.write("Microstructure Logs")
-                st.info("Tracks order book imbalance and bid-ask spreads.")
 
         with tab5:
             st.subheader("DeFi Yield Farming & Staking")
             yields = [m['value'] for m in data['memory'] if m['key'] == 'defi_opportunity']
-            if yields:
-                st.write("Active Yield Opportunities")
-                st.dataframe(pd.DataFrame(yields))
-            else:
-                st.info("No DeFi opportunities logged.")
+            if yields: st.dataframe(pd.DataFrame(yields))
 
         with tab6:
+            st.subheader("Risk Modeling & Stress Testing")
+            risk_logs = [m['value'] for m in data['memory'] if m['key'] == 'risk_analysis']
+            if risk_logs:
+                latest_risk = risk_logs[-1]
+                col_r1, col_r2 = st.columns(2)
+                with col_r1:
+                    st.write(f"Symbol: {latest_risk['symbol']}")
+                    st.write(f"Historical VaR: {latest_risk['var_historical']:.2%}")
+                    st.write(f"Monte Carlo VaR: {latest_risk['var_monte_carlo']:.2%}")
+                with col_r2:
+                    st.write("Simulation Distribution")
+                    fig_sim = px.histogram(latest_risk['sim_final_prices'], nbins=50, title="Monte Carlo Price Distribution")
+                    st.plotly_chart(fig_sim)
+            else:
+                st.info("No risk analysis data found in results.")
+
+        with tab7:
             st.subheader("Remote Control Panel")
             with st.form("manual_order"):
                 symbol = st.selectbox("Symbol", ["BTC/USDT", "ETH/USDT"])

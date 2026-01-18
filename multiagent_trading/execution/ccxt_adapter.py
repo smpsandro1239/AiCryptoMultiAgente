@@ -37,6 +37,20 @@ class CCXTAdapter:
         """Mock fetching balance."""
         return self.mock_balance
 
+    async def watch_ohlcv(self, symbol, timeframe='1h', callback=None):
+        """
+        Simulates CCXT Pro's watch_ohlcv using WebSockets.
+        """
+        self.logger = getattr(self, 'logger', None)
+        if self.logger: self.logger.info(f"Subscribing to WebSocket for {symbol}...")
+
+        # Simulate receiving real-time ticks
+        for i in range(5):
+            await asyncio.sleep(1)
+            mock_candle = [1642320000000 + i*3600000, 42000.0 + i*10, 42100.0, 41900.0, 42050.0, 100.0]
+            if callback:
+                await callback(mock_candle)
+
     def close(self):
         # self.exchange.close()
         pass

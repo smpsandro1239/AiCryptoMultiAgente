@@ -213,7 +213,7 @@
                 "side": "SELL",
                 "type": "VWAP",
                 "usd_size": 1000.0,
-                "rationale": "Based on the None market regime and a sentiment score of -0.95, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
+                "rationale": "Based on the None market regime and a sentiment score of 0.07, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -227,7 +227,7 @@
                 "side": "SELL",
                 "type": "VWAP",
                 "usd_size": 1000.0,
-                "rationale": "Based on the None market regime and a sentiment score of 0.99, this ETH/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
+                "rationale": "Based on the None market regime and a sentiment score of 0.81, this ETH/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -241,7 +241,7 @@
                 "side": "SELL",
                 "type": "VWAP",
                 "usd_size": 999.9700099999999,
-                "rationale": "Based on the None market regime and a sentiment score of 0.81, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
+                "rationale": "Based on the None market regime and a sentiment score of -0.98, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -255,7 +255,7 @@
                 "side": "SELL",
                 "type": "VWAP",
                 "usd_size": 999.8579280710591,
-                "rationale": "Based on the None market regime and a sentiment score of 0.86, this ETH/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
+                "rationale": "Based on the None market regime and a sentiment score of 0.08, this ETH/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
         },
         {
@@ -269,8 +269,64 @@
                 "side": "SELL",
                 "type": "VWAP",
                 "usd_size": 1000.2252644516253,
-                "rationale": "Based on the None market regime and a sentiment score of 0.56, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
+                "rationale": "Based on the None market regime and a sentiment score of -0.94, this BTC/USDT SELL order is justified as a hedge or profit-taking move in the current None context."
             }
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BEAR"
+        },
+        {
+            "key": "notification",
+            "value": "\ud83d\udd04 Market Regime Change detected: BULL"
         },
         {
             "key": "notification",
