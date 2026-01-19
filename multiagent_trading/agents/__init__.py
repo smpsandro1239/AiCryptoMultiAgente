@@ -6,6 +6,10 @@ from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.agents.execution import ExecutionAgent
 from multiagent_trading.agents.risk_parity import RiskParityOptimizerAgent
 from multiagent_trading.agents.risk_manager import StopLossTakeProfitAgent
+from multiagent_trading.agents.llm_agent import LLMAgent
+from multiagent_trading.agents.rl_agent import RLAgent
+from multiagent_trading.agents.microstructure import MicrostructureAgent
+from multiagent_trading.agents.regime_classifier import RegimeClassifierAgent
 
 __all__ = [
     "BaseAgent",
@@ -15,5 +19,9 @@ __all__ = [
     "SupervisorAgent",
     "ExecutionAgent",
     "RiskParityOptimizerAgent",
-    "StopLossTakeProfitAgent"
+    "StopLossTakeProfitAgent",
+    "LLMAgent",
+    "RLAgent",
+    "MicrostructureAgent",
+    "RegimeClassifierAgent"
 ]

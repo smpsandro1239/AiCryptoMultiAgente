@@ -23,7 +23,12 @@ st.sidebar.header("Estado do Sistema")
 st.sidebar.success("Sistema Ativo")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_audit = st.tabs(["Desempenho", "Execuções", "Auditoria de Decisões"])
+tab_perf, tab_exec, tab_micro, tab_audit = st.tabs([
+    "Desempenho",
+    "Execuções",
+    "Microestrutura",
+    "Auditoria de Decisões"
+])
 
 with tab_perf:
     st.subheader("Evolução do Portfólio")
@@ -43,10 +48,30 @@ with tab_exec:
     else:
         st.info("Sem dados na memória.")
 
+with tab_micro:
+    st.subheader("Análise de Microestrutura (Order Book)")
+    # Simulação de dados de microestrutura
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Spread Atual", "0.05", "0.01")
+    with col2:
+        st.metric("Order Book Imbalance", "0.65", "0.10")
+
+    st.info("Esta aba mostrará detalhes do bid-ask spread e desequilíbrio em tempo real.")
+
 with tab_audit:
     st.subheader("Auditoria de Decisões dos Agentes")
     df_memory = get_memory_data()
     if not df_memory.empty:
         st.dataframe(df_memory)
+
+        st.divider()
+        st.subheader("Raciocínio IA (LLM)")
+        llm_reasoning = df_memory[df_memory['value'].str.contains('rationale', na=False)]
+        if not llm_reasoning.empty:
+            for index, row in llm_reasoning.iterrows():
+                val = json.loads(row['value'])
+                st.write(f"**{row['timestamp']} - {val.get('symbol')}**")
+                st.info(val.get('rationale'))
     else:
         st.info("Nenhum registo de auditoria encontrado.")
