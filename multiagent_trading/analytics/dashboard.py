@@ -23,8 +23,11 @@ def get_memory_data():
         return pd.DataFrame()
 
 # Sidebar para filtros e status
-st.sidebar.header("Estado do Sistema")
-st.sidebar.success("Sistema Ativo")
+st.sidebar.header("🕹️ Controlo do Sistema")
+st.sidebar.success("Sistema Online (v1.0-RC)")
+st.sidebar.divider()
+st.sidebar.write("**Configurações de Língua**")
+st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
 tab_perf, tab_exec, tab_micro, tab_hft, tab_defi, tab_stress, tab_replay, tab_market, tab_control, tab_audit = st.tabs([

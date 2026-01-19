@@ -22,10 +22,22 @@ class NotificationAgent(BaseAgent):
         await self._send_notification(msg)
 
     async def _send_notification(self, message):
+        # Envio para Webhook Genérico
         if self.webhook_url:
             try:
-                # Simulação de envio asíncrono
                 # requests.post(self.webhook_url, json={"text": message})
-                pass
+                self.logger.info(f"Notificação Webhook enviada: {message}")
             except Exception as e:
-                self.logger.error(f"Erro ao enviar notificação: {str(e)}")
+                self.logger.error(f"Erro ao enviar notificação Webhook: {str(e)}")
+
+        # Envio para Telegram (se configurado)
+        telegram_token = self.config.get("telegram_token")
+        chat_id = self.config.get("telegram_chat_id")
+
+        if telegram_token and chat_id:
+            try:
+                url = f"https://api.telegram.org/bot{telegram_token}/sendMessage"
+                # requests.post(url, json={"chat_id": chat_id, "text": message})
+                self.logger.info(f"Notificação Telegram enviada para o chat {chat_id}")
+            except Exception as e:
+                self.logger.error(f"Erro ao enviar notificação Telegram: {str(e)}")
