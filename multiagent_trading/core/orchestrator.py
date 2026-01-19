@@ -1,4 +1,5 @@
 import asyncio
+import json
 from typing import Dict, Any, List
 from multiagent_trading.core.logger import Logger
 from multiagent_trading.core.memory import PersistentSemanticMemory
@@ -53,10 +54,23 @@ class Backtester:
         self.orchestrator = orchestrator
         self.data_feed = data_feed
         self.context = context
-        self.results = {"pnl": []}
+        self.results = {"pnl": [], "memory": []}
 
-    async def run(self):
+    async def run(self, save_path=None):
         for tick in self.data_feed:
             await self.orchestrator.step(tick)
             self.results["pnl"].append(self.context.portfolio.total_value)
+
+        if save_path:
+            self.save_results(save_path)
+
         return self.results
+
+    def save_results(self, filepath):
+        """Guarda os resultados e a memória semântica num ficheiro JSON."""
+        # Tentar obter memória persistente se disponível
+        if hasattr(self.context.memory, 'query'):
+            self.results["memory"] = self.context.memory.query("")
+
+        with open(filepath, 'w') as f:
+            json.dump(self.results, f, indent=4)

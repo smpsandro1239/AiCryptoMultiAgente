@@ -1,3 +1,4 @@
+import numpy as np
 from multiagent_trading.indicators.ema import calculate_ema
 
 def calculate_macd(prices, slow=26, fast=12, signal=9):
@@ -12,7 +13,6 @@ def calculate_macd(prices, slow=26, fast=12, signal=9):
     signal_line = calculate_ema(macd_line[slow-1:], signal)
 
     # Pad signal_line to match macd_line length
-    import numpy as np
     full_signal_line = np.zeros_like(macd_line)
     full_signal_line[:] = np.nan
     if signal_line is not None:

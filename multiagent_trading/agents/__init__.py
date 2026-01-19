@@ -18,6 +18,9 @@ from multiagent_trading.agents.arbitrage import ArbitrageAgent
 from multiagent_trading.agents.market_maker import MarketMakerAgent
 from multiagent_trading.agents.scalping import ScalpingAgent
 from multiagent_trading.agents.attribution import PerformanceAttributionAgent
+from multiagent_trading.agents.notifications import NotificationAgent
+from multiagent_trading.agents.rebalancer import LongShortRebalancingAgent
+from multiagent_trading.agents.risk_analysis import RiskAnalysisAgent
 
 __all__ = [
     "BaseAgent",
@@ -39,5 +42,8 @@ __all__ = [
     "ArbitrageAgent",
     "MarketMakerAgent",
     "ScalpingAgent",
-    "PerformanceAttributionAgent"
+    "PerformanceAttributionAgent",
+    "NotificationAgent",
+    "LongShortRebalancingAgent",
+    "RiskAnalysisAgent"
 ]

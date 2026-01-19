@@ -23,13 +23,14 @@ st.sidebar.header("Estado do Sistema")
 st.sidebar.success("Sistema Ativo")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_micro, tab_defi, tab_replay, tab_audit = st.tabs([
-    "Desempenho",
-    "Execuções",
-    "Microestrutura",
-    "DeFi & Yield",
-    "Trade Replay",
-    "Auditoria de Decisões"
+tab_perf, tab_exec, tab_micro, tab_defi, tab_replay, tab_control, tab_audit = st.tabs([
+    "📈 Desempenho",
+    "💸 Execuções",
+    "🔍 Microestrutura",
+    "🔗 DeFi & Yield",
+    "⏪ Trade Replay",
+    "🎮 Painel de Controlo",
+    "📋 Auditoria de Decisões"
 ])
 
 with tab_perf:
@@ -75,7 +76,7 @@ with tab_defi:
         st.info("Sem dados na memória.")
 
 with tab_replay:
-    st.subheader("Trade Replay")
+    st.subheader("⏪ Replay de Negociações")
     st.write("Revisão passo-a-passo das trocas históricas.")
 
     df_memory = get_memory_data()
@@ -83,13 +84,38 @@ with tab_replay:
         trades = df_memory[df_memory['key'] == 'trade'].copy()
         if not trades.empty:
             step = st.slider("Passo da Troca", 0, len(trades)-1, 0)
-            selected_trade = json.loads(trades.iloc[step]['value'])
-            st.json(selected_trade)
-            st.write(f"Timestamp: {trades.iloc[step]['timestamp']}")
+            selected_row = trades.iloc[step]
+            selected_trade = json.loads(selected_row['value'])
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write("**Dados da Ordem**")
+                st.json(selected_trade)
+            with col2:
+                st.write("**Metadados**")
+                st.write(f"ID: {selected_row['id']}")
+                st.write(f"Timestamp: {selected_row['timestamp']}")
         else:
             st.info("Nenhuma troca para reproduzir.")
     else:
         st.info("Sem dados na memória.")
+
+with tab_control:
+    st.subheader("🎮 Painel de Controlo")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("### Ordens Manuais")
+        symbol = st.text_input("Símbolo", "BTC/USDT")
+        side = st.selectbox("Lado", ["BUY", "SELL"])
+        amount = st.number_input("Quantidade", min_value=0.0, value=1.0)
+        if st.button("Enviar Ordem"):
+            st.success(f"Ordem de {side} para {amount} {symbol} enviada para o orchestrator!")
+
+    with col2:
+        st.write("### Estado da API")
+        if st.button("Verificar Status"):
+            st.code('{"status": "online", "framework": "MATF"}')
 
 with tab_audit:
     st.subheader("Auditoria de Decisões dos Agentes")
