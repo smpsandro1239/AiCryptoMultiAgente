@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import os
 import numpy as np
 from datetime import datetime
 from typing import Any, List
@@ -62,3 +63,22 @@ class VectorMemory:
         # Ordenar por distância (menor é melhor)
         distances.sort(key=lambda x: x[0])
         return distances[:top_k]
+
+    def save(self, filepath: str):
+        """Guarda os embeddings e metadados em disco."""
+        data = {
+            "embeddings": [emb.tolist() for emb, _ in self.embeddings],
+            "metadata": [meta for _, meta in self.embeddings]
+        }
+        with open(filepath, 'w') as f:
+            json.dump(data, f)
+
+    def load(self, filepath: str):
+        """Carrega os embeddings e metadados do disco."""
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+                self.embeddings = [
+                    (np.array(emb), meta)
+                    for emb, meta in zip(data["embeddings"], data["metadata"])
+                ]

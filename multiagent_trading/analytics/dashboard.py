@@ -141,20 +141,34 @@ with tab_defi:
         st.info("Sem dados na memória.")
 
 with tab_market:
-    st.subheader("🏪 Mercado de Estratégias")
-    st.write("Descarregue novas configurações de agentes da comunidade.")
+    st.subheader("🏪 Mercado de Estratégias e Plugins")
 
-    marketplace = [
-        {"name": "Trend Follower Pro", "author": "QuantLab", "rating": "⭐⭐⭐⭐⭐"},
-        {"name": "Arbitrage Master", "author": "DeFiWhale", "rating": "⭐⭐⭐⭐"},
-        {"name": "HFT Scalper", "author": "FlashBoys", "rating": "⭐⭐⭐⭐⭐"}
-    ]
+    col_l, col_r = st.columns(2)
 
-    for item in marketplace:
-        col1, col2, col3 = st.columns([2, 1, 1])
-        with col1: st.write(f"**{item['name']}** by {item['author']}")
-        with col2: st.write(item['rating'])
-        with col3: st.button("Descarregar", key=item['name'])
+    with col_l:
+        st.write("### Estratégias Disponíveis")
+        marketplace = [
+            {"name": "Trend Follower Pro", "author": "QuantLab", "rating": "⭐⭐⭐⭐⭐"},
+            {"name": "Arbitrage Master", "author": "DeFiWhale", "rating": "⭐⭐⭐⭐"},
+            {"name": "HFT Scalper", "author": "FlashBoys", "rating": "⭐⭐⭐⭐⭐"}
+        ]
+
+        for item in marketplace:
+            mcol1, mcol2 = st.columns([3, 1])
+            with mcol1: st.write(f"**{item['name']}** ({item['author']})")
+            with mcol2: st.button("Instalar", key=f"inst_{item['name']}")
+
+    with col_r:
+        st.write("### Gestão de Plugins")
+        plugin_path = st.text_input("Caminho do Módulo de Plugin", "multiagent_trading.agents.custom")
+        if st.button("Carregar Plugin"):
+            st.info(f"A tentar carregar plugin de: {plugin_path}")
+            # Em produção, chamaria o PluginManager
+            st.success("Plugin validado e pronto a ativar!")
+
+        st.write("---")
+        st.write("**Agentes Ativos**")
+        st.caption("RegimeClassifier, Scanner, Risk, Supervisor, Execution, LLM, Sentiment, DeFi")
 
 with tab_replay:
     st.subheader("⏪ Replay de Negociações")

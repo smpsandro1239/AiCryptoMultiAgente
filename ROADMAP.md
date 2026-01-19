@@ -23,3 +23,10 @@
 - Strategy marketplace
 - Cloud deployment templates
 - Full documentation website
+
+## v1.1 (Current)
+- Modelagem de Slippage e Comissões
+- Persistência de Vector Memory (Embeddings)
+- Relatórios de Performance automatizados
+- Gestão de Plugins via Dashboard
+- Integração com Telegram e Webhooks

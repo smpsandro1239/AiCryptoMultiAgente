@@ -52,11 +52,25 @@ class Orchestrator:
         await self.event_bus.publish("market_update", market_snapshot)
 
 class Backtester:
-    def __init__(self, orchestrator, data_feed, context):
+    def __init__(self, orchestrator, data_feed, context, commission=0.001, slippage=0.0005):
         self.orchestrator = orchestrator
         self.data_feed = data_feed
         self.context = context
+        self.commission = commission # 0.1% por defeito
+        self.slippage = slippage # 0.05% por defeito
         self.results = {"pnl": [], "memory": []}
+
+        # Subscrever a eventos de trade para aplicar taxas
+        self.orchestrator.event_bus.subscribe("trade_approved", self._apply_trading_costs)
+
+    async def _apply_trading_costs(self, opp):
+        """Aplica slippage e comissões ao portfólio no momento da aprovação do trade."""
+        if hasattr(self.context.portfolio, "total_value"):
+            # Simulação simplificada de custo baseada no valor da troca (ou valor fixo para o exemplo)
+            trade_value = 1000 # Assumindo um tamanho de posição standard
+            costs = trade_value * (self.commission + self.slippage)
+            self.context.portfolio.total_value -= costs
+            self.orchestrator.logger.info(f"Custos de trading aplicados: -{costs:.2f} (Comissão + Slippage)")
 
     async def run(self, save_path=None):
         pnl_history = []
