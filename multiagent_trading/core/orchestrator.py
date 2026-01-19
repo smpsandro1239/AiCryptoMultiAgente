@@ -1,6 +1,7 @@
 import asyncio
-import logging
 from typing import Dict, Any, List
+from multiagent_trading.core.logger import Logger
+from multiagent_trading.core.memory import PersistentSemanticMemory
 
 class EventBus:
     def __init__(self):
@@ -16,33 +17,13 @@ class EventBus:
             tasks = [callback(data) for callback in self.listeners[event_type]]
             await asyncio.gather(*tasks)
 
-class Logger:
-    def __init__(self):
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        self.logger = logging.getLogger("MATF")
-
-    def info(self, msg): self.logger.info(msg)
-    def error(self, msg): self.logger.error(msg)
-    def warning(self, msg): self.logger.warning(msg)
-
-class SemanticMemory:
-    def __init__(self):
-        self.memory = []
-
-    def add(self, key: str, value: Any):
-        self.memory.append({"key": key, "value": value})
-
-    def query(self, query_str: str):
-        # Placeholder for semantic search
-        return [m for m in self.memory if query_str in str(m["value"])]
-
 class Context:
     def __init__(self, timestamp=None, regime=None, portfolio=None, market_data=None, memory=None):
         self.timestamp = timestamp
         self.regime = regime
         self.portfolio = portfolio
         self.market_data = market_data
-        self.memory = memory or SemanticMemory()
+        self.memory = memory or PersistentSemanticMemory()
 
 class Orchestrator:
     def __init__(self, agents, context, event_bus, logger):
