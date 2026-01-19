@@ -1,8 +1,10 @@
 import asyncio
 import json
+import pandas as pd
 from typing import Dict, Any, List
 from multiagent_trading.core.logger import Logger
 from multiagent_trading.core.memory import PersistentSemanticMemory
+from multiagent_trading.analytics.metrics import calculate_sharpe_ratio, calculate_max_drawdown
 
 class EventBus:
     def __init__(self):
@@ -57,9 +59,20 @@ class Backtester:
         self.results = {"pnl": [], "memory": []}
 
     async def run(self, save_path=None):
+        pnl_history = []
         for tick in self.data_feed:
             await self.orchestrator.step(tick)
-            self.results["pnl"].append(self.context.portfolio.total_value)
+            val = self.context.portfolio.total_value
+            self.results["pnl"].append(val)
+            pnl_history.append(val)
+
+        # Calcular métricas finais
+        returns = pd.Series(pnl_history).pct_change().dropna().tolist()
+        self.results["metrics"] = {
+            "sharpe_ratio": calculate_sharpe_ratio(returns),
+            "max_drawdown": calculate_max_drawdown(pnl_history),
+            "final_value": self.context.portfolio.total_value
+        }
 
         if save_path:
             self.save_results(save_path)
