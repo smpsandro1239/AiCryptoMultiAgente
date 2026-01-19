@@ -87,3 +87,38 @@ class Backtester:
 
         with open(filepath, 'w') as f:
             json.dump(self.results, f, indent=4)
+
+class LiveOrchestrator(Orchestrator):
+    """
+    Variante do Orchestrator otimizada para execução em tempo real com feeds de dados vivos.
+    """
+    def __init__(self, agents, context, event_bus, logger, adapter):
+        super().__init__(agents, context, event_bus, logger)
+        self.adapter = adapter
+        self.running = False
+
+    async def start(self, symbol, timeframe='1m'):
+        """Inicia o loop de trading em tempo real."""
+        self.running = True
+        self.logger.info(f"A iniciar LiveOrchestrator para {symbol} ({timeframe})")
+
+        async for tick in self.adapter.watch_ohlcv(symbol, timeframe):
+            if not self.running:
+                break
+
+            # Normalizar tick para o formato esperado pelo orchestrator
+            market_snapshot = {
+                "symbol": symbol,
+                "open": tick[1],
+                "high": tick[2],
+                "low": tick[3],
+                "close": tick[4],
+                "volume": tick[5],
+                "timestamp": tick[0]
+            }
+
+            await self.step(market_snapshot)
+
+    def stop(self):
+        self.running = False
+        self.logger.info("LiveOrchestrator parado.")

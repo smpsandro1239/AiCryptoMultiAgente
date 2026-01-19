@@ -5,6 +5,7 @@ import json
 import sqlite3
 import plotly.graph_objects as go
 from multiagent_trading.analytics.plots import TradeVisualizer
+from multiagent_trading.analytics.stress_test import PortfolioStressTester
 from datetime import datetime
 
 st.set_page_config(page_title="MATF Dashboard", layout="wide")
@@ -26,12 +27,13 @@ st.sidebar.header("Estado do Sistema")
 st.sidebar.success("Sistema Ativo")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_micro, tab_hft, tab_defi, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_micro, tab_hft, tab_defi, tab_stress, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "🔍 Microestrutura",
     "⚡ HFT & Scalping",
     "🔗 DeFi & Yield",
+    "🛡️ Stress Testing",
     "⏪ Trade Replay",
     "🏪 Mercado de Estratégias",
     "🎮 Painel de Controlo",
@@ -86,6 +88,41 @@ with tab_hft:
     st.write("Monitorização de micro-momentum e execução de alta frequência.")
     st.line_chart(np.random.randn(20, 3), height=250)
     st.info("Frequência de scan: 500ms | Agentes ativos: ScalpingAgent, MarketMakerAgent")
+
+with tab_stress:
+    st.subheader("🛡️ Testes de Stress e Projeções de Risco")
+
+    portfolio_val = 10000.0
+    df_memory = get_memory_data()
+    if not df_memory.empty:
+        # Tentar obter valor real se disponível em memória ou simular
+        st.write(f"Valor Base do Portfólio: **${portfolio_val}**")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write("### Cenários Históricos")
+            stress_results = PortfolioStressTester.simulate_scenarios(portfolio_val)
+            for scenario, val in stress_results.items():
+                diff = val - portfolio_val
+                st.metric(scenario, f"${val:,.2f}", f"{diff:,.2f}")
+
+        with col2:
+            st.write("### Projeção Monte Carlo (30 dias)")
+            mc_data = df_memory[df_memory['key'] == 'risk_monte_carlo']
+            if not mc_data.empty:
+                latest_mc = json.loads(mc_data.iloc[0]['value'])
+                st.write(f"**Mediana:** ${latest_mc['median']:,.2f}")
+                st.write(f"**Pior Caso:** ${latest_mc['worst_case']:,.2f}")
+                st.write(f"**Melhor Caso:** ${latest_mc['best_case']:,.2f}")
+
+                # Gráfico de barras simples para MC
+                st.bar_chart({
+                    "Pior Caso": latest_mc['worst_case'],
+                    "Mediana": latest_mc['median'],
+                    "Melhor Caso": latest_mc['best_case']
+                })
+            else:
+                st.info("Aguardando dados de Monte Carlo do RiskAnalysisAgent...")
 
 with tab_defi:
     st.subheader("Oportunidades DeFi & Yield")
