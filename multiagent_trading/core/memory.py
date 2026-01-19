@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import numpy as np
 from datetime import datetime
 from typing import Any, List
 
@@ -36,3 +37,28 @@ class PersistentSemanticMemory:
                 {"timestamp": row[0], "key": row[1], "value": json.loads(row[2])}
                 for row in cursor.fetchall()
             ]
+
+class VectorMemory:
+    """
+    Suporte para armazenamento e pesquisa de embeddings de regime utilizando distância Euclidiana.
+    """
+    def __init__(self):
+        self.embeddings = [] # List of tuples (embedding, metadata)
+
+    def add(self, embedding: List[float], metadata: dict):
+        self.embeddings.append((np.array(embedding), metadata))
+
+    def search(self, query_embedding: List[float], top_k: int = 5):
+        if not self.embeddings:
+            return []
+
+        query_vec = np.array(query_embedding)
+        distances = []
+
+        for emb, meta in self.embeddings:
+            dist = np.linalg.norm(emb - query_vec) # Distância Euclidiana
+            distances.append((dist, meta))
+
+        # Ordenar por distância (menor é melhor)
+        distances.sort(key=lambda x: x[0])
+        return distances[:top_k]

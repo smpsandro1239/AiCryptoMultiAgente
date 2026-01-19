@@ -32,12 +32,20 @@ class Orchestrator:
         self.event_bus = event_bus
         self.logger = logger
 
-    async def step(self, market_snapshot):
+    async def step(self, market_snapshot: Dict[str, Any]):
+        """
+        snapshot pode ser um único tick ou um dicionário {symbol: tick_data}
+        """
         self.context.market_data = market_snapshot
-        self.context.timestamp = market_snapshot.get("timestamp")
 
-        # In a real scenario, agents would react to events.
-        # Here we trigger them in a simplified loop or via event bus.
+        # Se for multi-símbolo, extrair timestamp de um deles
+        if isinstance(market_snapshot, dict) and "timestamp" not in market_snapshot:
+            first_val = next(iter(market_snapshot.values()))
+            if isinstance(first_val, dict):
+                self.context.timestamp = first_val.get("timestamp")
+        else:
+            self.context.timestamp = market_snapshot.get("timestamp")
+
         await self.event_bus.publish("market_update", market_snapshot)
 
 class Backtester:

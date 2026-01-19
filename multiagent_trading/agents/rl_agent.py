@@ -45,9 +45,15 @@ class RLAgent(BaseAgent):
         return (int(rsi / 10), regime)
 
     def _calculate_reward(self):
-        # Recompensa baseada na mudança de valor do portfólio
-        if not hasattr(self.context, "portfolio"): return 0
-        return self.context.portfolio.total_value % 10 # Simulação de recompensa
+        # Recompensa baseada na mudança percentual do valor do portfólio
+        if not hasattr(self.context, "portfolio") or not hasattr(self, "last_portfolio_value"):
+            self.last_portfolio_value = getattr(self.context.portfolio, "total_value", 10000)
+            return 0
+
+        current_value = self.context.portfolio.total_value
+        reward = (current_value - self.last_portfolio_value) / self.last_portfolio_value
+        self.last_portfolio_value = current_value
+        return reward
 
     def _update_q_table(self, state, action, reward, next_state):
         current_q = self.q_table.get((state, action), 0.0)

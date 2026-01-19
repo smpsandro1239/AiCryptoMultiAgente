@@ -1,0 +1,19 @@
+services:
+  dashboard:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=.
+    volumes:
+      - .:/app
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=.
+    command: uvicorn multiagent_trading.core.api:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
