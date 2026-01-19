@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import json
 import sqlite3
 from datetime import datetime
@@ -23,12 +24,14 @@ st.sidebar.header("Estado do Sistema")
 st.sidebar.success("Sistema Ativo")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_micro, tab_defi, tab_replay, tab_control, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_micro, tab_hft, tab_defi, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "🔍 Microestrutura",
+    "⚡ HFT & Scalping",
     "🔗 DeFi & Yield",
     "⏪ Trade Replay",
+    "🏪 Mercado de Estratégias",
     "🎮 Painel de Controlo",
     "📋 Auditoria de Decisões"
 ])
@@ -52,7 +55,7 @@ with tab_exec:
         st.info("Sem dados na memória.")
 
 with tab_micro:
-    st.subheader("Análise de Microestrutura (Order Book)")
+    st.subheader("🔍 Análise de Microestrutura (Order Book)")
     # Simulação de dados de microestrutura
     col1, col2 = st.columns(2)
     with col1:
@@ -61,6 +64,12 @@ with tab_micro:
         st.metric("Order Book Imbalance", "0.65", "0.10")
 
     st.info("Esta aba mostrará detalhes do bid-ask spread e desequilíbrio em tempo real.")
+
+with tab_hft:
+    st.subheader("⚡ HFT & Scalping")
+    st.write("Monitorização de micro-momentum e execução de alta frequência.")
+    st.line_chart(np.random.randn(20, 3), height=250)
+    st.info("Frequência de scan: 500ms | Agentes ativos: ScalpingAgent, MarketMakerAgent")
 
 with tab_defi:
     st.subheader("Oportunidades DeFi & Yield")
@@ -74,6 +83,22 @@ with tab_defi:
             st.info("Nenhuma oportunidade DeFi registada.")
     else:
         st.info("Sem dados na memória.")
+
+with tab_market:
+    st.subheader("🏪 Mercado de Estratégias")
+    st.write("Descarregue novas configurações de agentes da comunidade.")
+
+    marketplace = [
+        {"name": "Trend Follower Pro", "author": "QuantLab", "rating": "⭐⭐⭐⭐⭐"},
+        {"name": "Arbitrage Master", "author": "DeFiWhale", "rating": "⭐⭐⭐⭐"},
+        {"name": "HFT Scalper", "author": "FlashBoys", "rating": "⭐⭐⭐⭐⭐"}
+    ]
+
+    for item in marketplace:
+        col1, col2, col3 = st.columns([2, 1, 1])
+        with col1: st.write(f"**{item['name']}** by {item['author']}")
+        with col2: st.write(item['rating'])
+        with col3: st.button("Descarregar", key=item['name'])
 
 with tab_replay:
     st.subheader("⏪ Replay de Negociações")

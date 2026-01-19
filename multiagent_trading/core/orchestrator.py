@@ -40,7 +40,7 @@ class Orchestrator:
         self.context.market_data = market_snapshot
 
         # Se for multi-símbolo, extrair timestamp de um deles
-        if isinstance(market_snapshot, dict) and "timestamp" not in market_snapshot:
+        if isinstance(market_snapshot, dict) and "timestamp" not in market_snapshot and market_snapshot:
             first_val = next(iter(market_snapshot.values()))
             if isinstance(first_val, dict):
                 self.context.timestamp = first_val.get("timestamp")

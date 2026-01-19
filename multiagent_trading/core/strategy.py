@@ -26,3 +26,22 @@ class StrategyManager:
 
     def list_strategies(self) -> List[str]:
         return [f.replace(".json", "") for f in os.listdir(self.strategies_dir) if f.endswith(".json")]
+
+class StrategyMarketplace:
+    """
+    Simula um mercado de estratégias onde os utilizadores podem listar,
+    comprar ou descarregar novos modelos de agentes.
+    """
+    def __init__(self):
+        self.available_strategies = [
+            {"id": "s1", "name": "Trend Follower Pro", "author": "QuantLab", "price": "100 MATF"},
+            {"id": "s2", "name": "Arbitrage Master", "author": "DeFiWhale", "price": "Free"},
+            {"id": "s3", "name": "HFT Scalper", "author": "FlashBoys", "price": "500 MATF"}
+        ]
+
+    def list_available(self):
+        return self.available_strategies
+
+    def download_strategy(self, strategy_id: str):
+        # Simulação de download de ficheiro de configuração
+        return {"name": "Downloaded Strategy", "agents": []}
