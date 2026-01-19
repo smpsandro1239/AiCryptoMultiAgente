@@ -10,6 +10,14 @@ from multiagent_trading.agents.llm_agent import LLMAgent
 from multiagent_trading.agents.rl_agent import RLAgent
 from multiagent_trading.agents.microstructure import MicrostructureAgent
 from multiagent_trading.agents.regime_classifier import RegimeClassifierAgent
+from multiagent_trading.agents.mvo_optimizer import MVOOptimizerAgent
+from multiagent_trading.agents.black_litterman import BlackLittermanAgent
+from multiagent_trading.agents.sentiment import SentimentAgent
+from multiagent_trading.agents.defi import DeFiAgent
+from multiagent_trading.agents.arbitrage import ArbitrageAgent
+from multiagent_trading.agents.market_maker import MarketMakerAgent
+from multiagent_trading.agents.scalping import ScalpingAgent
+from multiagent_trading.agents.attribution import PerformanceAttributionAgent
 
 __all__ = [
     "BaseAgent",
@@ -23,5 +31,13 @@ __all__ = [
     "LLMAgent",
     "RLAgent",
     "MicrostructureAgent",
-    "RegimeClassifierAgent"
+    "RegimeClassifierAgent",
+    "MVOOptimizerAgent",
+    "BlackLittermanAgent",
+    "SentimentAgent",
+    "DeFiAgent",
+    "ArbitrageAgent",
+    "MarketMakerAgent",
+    "ScalpingAgent",
+    "PerformanceAttributionAgent"
 ]

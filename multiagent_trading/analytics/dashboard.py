@@ -23,10 +23,12 @@ st.sidebar.header("Estado do Sistema")
 st.sidebar.success("Sistema Ativo")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_micro, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_micro, tab_defi, tab_replay, tab_audit = st.tabs([
     "Desempenho",
     "Execuções",
     "Microestrutura",
+    "DeFi & Yield",
+    "Trade Replay",
     "Auditoria de Decisões"
 ])
 
@@ -58,6 +60,36 @@ with tab_micro:
         st.metric("Order Book Imbalance", "0.65", "0.10")
 
     st.info("Esta aba mostrará detalhes do bid-ask spread e desequilíbrio em tempo real.")
+
+with tab_defi:
+    st.subheader("Oportunidades DeFi & Yield")
+    df_memory = get_memory_data()
+    if not df_memory.empty:
+        defi_opps = df_memory[df_memory['key'] == 'defi_opportunity'].copy()
+        if not defi_opps.empty:
+            defi_opps['details'] = defi_opps['value'].apply(json.loads)
+            st.write(defi_opps[['timestamp', 'details']])
+        else:
+            st.info("Nenhuma oportunidade DeFi registada.")
+    else:
+        st.info("Sem dados na memória.")
+
+with tab_replay:
+    st.subheader("Trade Replay")
+    st.write("Revisão passo-a-passo das trocas históricas.")
+
+    df_memory = get_memory_data()
+    if not df_memory.empty:
+        trades = df_memory[df_memory['key'] == 'trade'].copy()
+        if not trades.empty:
+            step = st.slider("Passo da Troca", 0, len(trades)-1, 0)
+            selected_trade = json.loads(trades.iloc[step]['value'])
+            st.json(selected_trade)
+            st.write(f"Timestamp: {trades.iloc[step]['timestamp']}")
+        else:
+            st.info("Nenhuma troca para reproduzir.")
+    else:
+        st.info("Sem dados na memória.")
 
 with tab_audit:
     st.subheader("Auditoria de Decisões dos Agentes")
