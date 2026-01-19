@@ -3,3 +3,10 @@ pyyaml
 pandas
 numpy
 matplotlib
+scikit-learn
+scipy
+fastapi
+uvicorn
+pydantic
+streamlit
+plotly
