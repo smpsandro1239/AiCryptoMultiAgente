@@ -1,5 +1,6 @@
 import ccxt
 import asyncio
+import time
 
 class CCXTAdapter:
     """
@@ -25,5 +26,19 @@ class CCXTAdapter:
         """Simulação de watch_ohlcv (em um cenário real usaria websockets do ccxt.pro)"""
         while True:
             data = await self.fetch_ohlcv(symbol, timeframe, limit=1)
-            yield data[0]
+            if data:
+                yield data[0]
             await asyncio.sleep(60)
+
+    async def watch_trades(self, symbol):
+        """Simulação de watch_trades via WebSockets."""
+        while True:
+            # Mock de trade em tempo real
+            trade = {
+                'symbol': symbol,
+                'price': 50000 + (asyncio.get_event_loop().time() % 100),
+                'amount': 0.01,
+                'timestamp': int(time.time() * 1000)
+            }
+            yield trade
+            await asyncio.sleep(1) # Simula trades a cada segundo

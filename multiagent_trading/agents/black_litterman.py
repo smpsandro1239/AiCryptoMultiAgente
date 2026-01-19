@@ -9,7 +9,16 @@ class BlackLittermanAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tau = 0.05 # Escala de incerteza da prior
+        self.views = {} # {symbol: expected_return}
         self.event_bus.subscribe("opportunity_found", self.on_opportunity)
+        self.event_bus.subscribe("sentiment_shift", self.on_sentiment_shift)
+
+    async def on_sentiment_shift(self, data):
+        symbol = data.get("symbol")
+        score = data.get("score")
+        # Transformar sentimento em visão de retorno (ex: score 0.8 -> +4% retorno)
+        self.views[symbol] = score * 0.05
+        self.logger.info(f"Visão Black-Litterman atualizada para {symbol}", view=self.views[symbol])
 
     async def on_opportunity(self, opp):
         self.logger.info(f"{self.name} a aplicar modelo Black-Litterman para {opp['symbol']}...")
@@ -22,7 +31,11 @@ class BlackLittermanAgent(BaseAgent):
 
         # Simplificação para demonstração
         pi = np.array([0.03, 0.02])
-        q = np.array([0.05]) # Visão otimista de 5% de retorno
+
+        # Utilizar visão dinâmica se disponível, caso contrário usar default
+        q_val = self.views.get(opp['symbol'], 0.05)
+        q = np.array([q_val])
+
         p = np.array([[1, 0]]) # A visão aplica-se apenas ao primeiro ativo
         sigma = np.array([[0.0004, 0.0001], [0.0001, 0.0003]])
         omega = np.array([[0.00001]]) # Incerteza da visão
