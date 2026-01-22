@@ -30,9 +30,10 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_micro, tab_hft, tab_defi, tab_stress, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
+    "📰 Sentimento Global",
     "🔍 Microestrutura",
     "⚡ HFT & Scalping",
     "🔗 DeFi & Yield",
@@ -61,6 +62,23 @@ with tab_perf:
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.line_chart([1000, 1010, 1005, 1020, 1015, 1030])
+
+with tab_news:
+    st.subheader("📰 Feed de Notícias e Sentimento")
+    news_items = [
+        {"time": "10:00", "title": "Fed mantém taxas de juro inalteradas", "sentiment": "Positivo"},
+        {"time": "11:30", "title": "Adoção institucional de BTC atinge novo máximo", "sentiment": "Muito Positivo"},
+        {"time": "13:00", "title": "Regulação restritiva em discussão na UE", "sentiment": "Negativo"}
+    ]
+    for item in news_items:
+        col1, col2 = st.columns([1, 4])
+        with col1: st.write(f"**{item['time']}**")
+        with col2: st.info(f"{item['title']} | Sentimento: {item['sentiment']}")
+
+    st.divider()
+    st.subheader("Impacto nos Agentes")
+    st.write("Evolução do Sentiment Score (Média Global)")
+    st.line_chart(np.random.uniform(0.1, 0.8, 20))
 
 with tab_exec:
     st.subheader("Histórico de Execuções")

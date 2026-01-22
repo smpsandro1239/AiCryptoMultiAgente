@@ -16,6 +16,10 @@ class ExecutionAgent(BaseAgent):
             await self._execute_twap(opp)
         elif strategy == "VWAP":
             await self._execute_vwap(opp)
+        elif strategy == "OCO":
+            await self._execute_oco(opp)
+        elif strategy == "LIMIT":
+            await self._execute_limit(opp)
         else:
             await self._execute_market(opp)
 
@@ -38,3 +42,12 @@ class ExecutionAgent(BaseAgent):
     async def _execute_vwap(self, opp):
         # Em cenário real, basear-se-ia no perfil de volume intradiário
         self.logger.info(f"Execução VWAP concluída para {opp['symbol']} (baseada em volume simulado)")
+
+    async def _execute_oco(self, opp):
+        # Ordem Cancels Other: Take Profit e Stop Loss simultâneos
+        self.logger.info(f"Ordem OCO colocada para {opp['symbol']}: TP {opp.get('tp')} | SL {opp.get('sl')}")
+        self.logger.info(f"Execução OCO concluída para {opp['symbol']}")
+
+    async def _execute_limit(self, opp):
+        self.logger.info(f"Ordem LIMIT colocada para {opp['symbol']} ao preço {opp.get('price')}")
+        self.logger.info(f"Execução LIMIT concluída para {opp['symbol']}")
