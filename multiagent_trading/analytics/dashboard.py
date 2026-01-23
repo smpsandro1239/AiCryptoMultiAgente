@@ -30,7 +30,7 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_opt, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
@@ -38,6 +38,7 @@ tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_repl
     "⚡ HFT & Scalping",
     "🔗 DeFi & Yield",
     "🛡️ Stress Testing",
+    "🛠️ Builder & Otimização",
     "⏪ Trade Replay",
     "🏪 Mercado de Estratégias",
     "🎮 Painel de Controlo",
@@ -109,6 +110,29 @@ with tab_hft:
     st.write("Monitorização de micro-momentum e execução de alta frequência.")
     st.line_chart(np.random.randn(20, 3), height=250)
     st.info("Frequência de scan: 500ms | Agentes ativos: ScalpingAgent, MarketMakerAgent")
+
+with tab_opt:
+    st.subheader("🛠️ Strategy Builder e Otimização")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("### 🏗️ Constructor de Estratégias")
+        st_name = st.text_input("Nome da Nova Estratégia", "MinhaEstrategia_v1")
+        st_agents = st.multiselect("Selecionar Agentes", ["Regime", "Scanner", "Risk", "Execution", "LLM", "Sentiment", "ML Classifier"])
+        if st.button("Gerar Ficheiro JSON"):
+            st.success(f"Estratégia {st_name}.json criada em strategies/")
+
+    with col2:
+        st.write("### 🚀 Otimização de Parâmetros")
+        st.write("Grid Search de Parâmetros de Risco")
+        st.slider("Risk Aversion Range", 0.5, 5.0, (1.0, 3.0))
+        if st.button("Iniciar Otimização"):
+            with st.spinner("A correr 12 variantes de backtest..."):
+                st.write("**Melhores Resultados:**")
+                st.table([
+                    {"Rank": 1, "Params": "Risk=2.0, SL=0.03", "Sharpe": 1.85},
+                    {"Rank": 2, "Params": "Risk=1.5, SL=0.02", "Sharpe": 1.72},
+                ])
 
 with tab_stress:
     st.subheader("🛡️ Testes de Stress e Projeções de Risco")

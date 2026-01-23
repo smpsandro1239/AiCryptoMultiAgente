@@ -25,3 +25,15 @@ def calculate_sortino_ratio(returns, risk_free_rate=0.0):
     std_downside = np.std(downside_returns)
     if std_downside == 0: return 0.0
     return (avg_return - risk_free_rate) / std_downside * np.sqrt(252)
+
+def calculate_calmar_ratio(returns, max_drawdown):
+    """Calcula o Calmar Ratio (Retorno Anualizado / MDD Absoluto)."""
+    if max_drawdown == 0: return 0.0
+    annual_return = np.mean(returns) * 252
+    return annual_return / abs(max_drawdown)
+
+def calculate_treynor_ratio(returns, beta, risk_free_rate=0.0):
+    """Calcula o Treynor Ratio (Retorno em excesso / Beta)."""
+    if beta == 0: return 0.0
+    excess_return = (np.mean(returns) * 252) - risk_free_rate
+    return excess_return / beta
