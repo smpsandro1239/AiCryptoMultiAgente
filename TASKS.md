@@ -2,11 +2,11 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 50 de 60 tarefas concluídas (83%)**
+**Progresso Total: 52 de 60 tarefas concluídas (86%)**
 
 ---
 
-## ✅ Concluído (v0.6 - v1.3)
+## ✅ Concluído (v0.6 - v1.4)
 
 ### Core & Infraestrutura
 1. [x] Refatoração de Agentes para ficheiros individuais.
@@ -55,21 +55,22 @@ Este ficheiro regista o progresso detalhado do desenvolvimento.
 38. [x] Dashboard Streamlit com 11 abas funcionais.
 39. [x] API REST FastAPI completa.
 40. [x] Notificações via Telegram e Webhooks.
+41. [x] Monitorização de Saúde dos Agentes (Heartbeats).
+42. [x] Integração Real de WebSockets no `CCXTAdapter` (via `ccxt.pro`).
 
 ---
 
-## 🏗️ Em Realização (Fase Atual: v1.3 -> v1.4)
-41. [ ] **Monitorização de Saúde dos Agentes (Heartbeats)**
-    - Implementar sistema de check-in para garantir que nenhum agente "morreu" em runtime.
-42. [ ] **Integração Real de WebSockets no CCXTAdapter**
-    - Substituir os mocks de `watch_trades` por chamadas reais via `ccxt.pro` (onde disponível).
+## 🏗️ Em Realização (Fase Atual: v1.4)
+43. [ ] **LLMAgent com RAG (Retrieval-Augmented Generation)**
+    - Adicionar capacidade de consulta a base de conhecimentos externa.
+44. [ ] **Sistema de Auto-Heal (Auto-Recuperação)**
+    - Reiniciar agentes que parem de enviar heartbeats.
+45. [ ] **Visualização Multi-Portfolio no Dashboard**
+    - Mostrar o estado de todas as sub-contas em simultâneo.
 
 ---
 
 ## 🚀 Próximas Tarefas (v1.4 - v2.0)
-43. [ ] Implementação de `LLMAgent` com RAG (Retrieval-Augmented Generation) para ler PDFs de research.
-44. [ ] Sistema de Auto-Heal (Reiniciar agentes que falham automaticamente).
-45. [ ] Visualização de Múltiplos Portfólios em simultâneo no Dashboard.
 46. [ ] Templates de Deployment Cloud (Terraform para AWS/GCP).
 47. [ ] Implementação de um "Modo de Guerra" (Botão de pânico que fecha todas as posições).
 48. [ ] Relatórios PDF gerados automaticamente via Dashboard.

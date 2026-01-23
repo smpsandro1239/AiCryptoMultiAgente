@@ -46,7 +46,7 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_opt, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+ tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_opt, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
@@ -55,6 +55,7 @@ tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_opt,
     "🔗 DeFi & Yield",
     "🛡️ Stress Testing",
     "🛠️ Builder & Otimização",
+     "💼 Multi-Portfolio",
     "⏪ Trade Replay",
     "🏪 Mercado de Estratégias",
     "🎮 Painel de Controlo",
@@ -197,6 +198,23 @@ with tab_defi:
             st.info("Nenhuma oportunidade DeFi registada.")
     else:
         st.info("Sem dados na memória.")
+
+with tab_port:
+    st.subheader("💼 Gestão de Múltiplos Portfólios")
+    st.write("Estado consolidado de todas as sub-contas.")
+
+    portfolios = {
+        "Default": {"balance": 10600.0, "pnl": 6.0, "status": "🟢 Ativo"},
+        "HFT_Aggressive": {"balance": 5110.0, "pnl": 2.2, "status": "🟢 Ativo"},
+        "DeFi_Yield": {"balance": 1500.0, "pnl": 12.5, "status": "🟡 Pausado"}
+    }
+
+    for name, data in portfolios.items():
+        col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
+        with col1: st.write(f"**{name}**")
+        with col2: st.metric("Saldo", f"${data['balance']:,.2f}")
+        with col3: st.metric("PnL (%)", f"{data['pnl']}%")
+        with col4: st.write(data['status'])
 
 with tab_market:
     st.subheader("🏪 Mercado de Estratégias e Plugins")

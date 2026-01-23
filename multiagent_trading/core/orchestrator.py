@@ -37,20 +37,49 @@ class Orchestrator:
         self.event_bus = event_bus
         self.logger = logger
 
-    def check_agents_health(self, timeout=60):
-        """Verifica se algum agente está inativo há mais de X segundos."""
+    def check_agents_health(self, timeout=60, auto_heal=False):
+        """
+        Verifica se algum agente está inativo e tenta reiniciar se auto_heal estiver ativo.
+        """
         inactive_agents = []
         now = time.time()
 
         # Lidar com agents como lista ou dict
-        agents_list = self.agents if isinstance(self.agents, list) else self.agents.values()
+        is_list = isinstance(self.agents, list)
+        agents_items = enumerate(self.agents) if is_list else self.agents.items()
 
-        for agent in agents_list:
+        for idx_or_key, agent in agents_items:
             if now - agent.last_heartbeat > timeout:
                 inactive_agents.append(agent.name)
                 self.logger.warning(f"Agente detectado como inativo: {agent.name}")
 
+                if auto_heal:
+                    self._heal_agent(idx_or_key, agent)
+
         return inactive_agents
+
+    def _heal_agent(self, key, agent):
+        """Tenta reiniciar um agente falhado (Auto-Heal)."""
+        self.logger.info(f"A tentar Auto-Heal para o agente: {agent.name}...")
+        try:
+            # Criar nova instância do mesmo tipo com a mesma config
+            agent_class = agent.__class__
+            new_agent = agent_class(
+                agent.name,
+                agent.config,
+                self.context,
+                self.event_bus,
+                self.logger
+            )
+
+            if isinstance(self.agents, list):
+                self.agents[key] = new_agent
+            else:
+                self.agents[key] = new_agent
+
+            self.logger.success(f"Agente {agent.name} recuperado com sucesso!")
+        except Exception as e:
+            self.logger.error(f"Falha ao recuperar agente {agent.name}: {str(e)}")
 
     async def step(self, market_snapshot: Dict[str, Any]):
         """

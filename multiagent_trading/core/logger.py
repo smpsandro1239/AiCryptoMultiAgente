@@ -41,5 +41,9 @@ class Logger:
     def warning(self, msg, **kwargs):
         self.logger.warning(msg, extra={"extra_fields": kwargs} if kwargs else None)
 
+    def success(self, msg, **kwargs):
+        # Utilizar INFO para representar sucesso estruturado
+        self.logger.info(f"✅ {msg}", extra={"extra_fields": kwargs} if kwargs else None)
+
     def debug(self, msg, **kwargs):
         self.logger.debug(msg, extra={"extra_fields": kwargs} if kwargs else None)
