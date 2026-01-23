@@ -2,11 +2,11 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 55 de 60 tarefas concluídas (91%)**
+**Progresso Total: 57 de 60 tarefas concluídas (95%)**
 
 ---
 
-## ✅ Concluído (v0.6 - v1.4)
+## ✅ Concluído (v0.6 - v1.5)
 
 ### Core & Infraestrutura
 1. [x] Refatoração de Agentes para ficheiros individuais.
@@ -60,26 +60,25 @@ Este ficheiro regista o progresso detalhado do desenvolvimento.
 43. [x] LLMAgent com RAG (Retrieval-Augmented Generation).
 44. [x] Sistema de Auto-Heal (Auto-Recuperação) no Orchestrator.
 45. [x] Visualização Multi-Portfolio no Dashboard.
+47. [x] Modo de Guerra (Panic Button) no Orchestrator e ExecutionAgent.
+48. [x] Relatórios PDF de Performance (via fpdf2).
+49. [x] Suporte para Futuros e Alavancagem no `ExecutionAgent`.
+50. [x] Agente de Arbitragem Estatística (Pairs Trading).
 
 ---
 
-## 🏗️ Em Realização (Fase Atual: v1.4)
-47. [ ] **Modo de Guerra (Panic Button)**
-    - Lógica global para fechar todas as posições e suspender operações.
-48. [ ] **Relatórios PDF de Performance**
-    - Geração de documentos resumidos para auditoria.
-50. [ ] **Agente de Arbitragem Estatística (Pairs Trading)**
-    - Análise de cointegração para estratégias long/short neutras ao mercado.
+## 🏗️ Em Realização (Fase Atual: v1.5)
+52. [ ] **Interface de Chat IA no Dashboard**
+    - Interação direta com o `LLMAgent` para insights de mercado.
+54. [ ] **Auditoria de Latência (Profiling)**
+    - Medição de performance do `EventBus`.
 
 ---
 
-## 🚀 Próximas Tarefas (v1.4 - v2.0)
+## 🚀 Próximas Tarefas (v1.5 - v2.0)
 46. [ ] Templates de Deployment Cloud (Terraform para AWS/GCP).
-49. [ ] Suporte para Opções e Futuros no `ExecutionAgent`.
 51. [ ] Melhoria do `RLAgent` para Deep Q-Learning (DQN).
-52. [ ] Interface de chat no Dashboard para falar com o `LLMAgent`.
 53. [ ] Exportação de logs para ELK Stack ou Grafana Loki.
-54. [ ] Auditoria de latência entre eventos (Profiling).
 55. [ ] Suporte para multi-moeda de conta (USD, EUR, BTC).
 56. [ ] Agente de Governança (Votação para mudar parâmetros globais).
 57. [ ] Documentação "Get Started" em vídeo/tutorial interativo.

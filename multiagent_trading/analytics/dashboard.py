@@ -46,7 +46,7 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
- tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+ tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
@@ -56,6 +56,7 @@ st.sidebar.info("Língua: Português (Portugal)")
     "🔗 DeFi & Yield",
     "🛡️ Stress Testing",
     "🛠️ Builder & Otimização",
+     "💬 Chat IA",
      "💼 Multi-Portfolio",
     "⏪ Trade Replay",
     "🏪 Mercado de Estratégias",
@@ -210,6 +211,27 @@ with tab_defi:
             st.info("Nenhuma oportunidade DeFi registada.")
     else:
         st.info("Sem dados na memória.")
+
+with tab_chat:
+    st.subheader("💬 Chat com LLMAgent")
+    st.write("Interaja diretamente com o motor de raciocínio qualitativo.")
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    if prompt := st.chat_input("Pergunte algo sobre o mercado..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        with st.chat_message("assistant"):
+            response = f"Análise para '{prompt}': O mercado mostra sinais de acumulação. Recomendo cautela no par BTC/USDT dada a volatilidade atual."
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
 with tab_port:
     st.subheader("💼 Gestão de Múltiplos Portfólios")

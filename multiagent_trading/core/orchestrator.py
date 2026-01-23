@@ -16,9 +16,15 @@ class EventBus:
         self.listeners[event_type].append(callback)
 
     async def publish(self, event_type: str, data: Any):
+        start_time = time.time()
         if event_type in self.listeners:
             tasks = [callback(data) for callback in self.listeners[event_type]]
             await asyncio.gather(*tasks)
+
+        latency = (time.time() - start_time) * 1000 # Latência em ms
+        # Apenas registar latências significativas ou via debug
+        if latency > 10: # > 10ms
+            print(f"[PROFILING] Evento '{event_type}' concluído em {latency:.2f}ms")
 
 class Context:
     def __init__(self, timestamp=None, regime=None, portfolio=None, market_data=None, memory=None):

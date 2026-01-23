@@ -4,11 +4,12 @@ import random
 
 class RLAgent(BaseAgent):
     """
-    Agente que implementa um mecanismo básico de Q-learning para gerar sinais
-    de negociação baseados em recompensas de PnL.
+    Agente que implementa reforço de aprendizagem.
+    Suporta Q-Learning e estrutura base para Deep Q-Learning (DQN).
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.use_dqn = self.config.get("use_dqn", False)
         self.q_table = {}
         self.learning_rate = 0.1
         self.discount_factor = 0.95
@@ -64,5 +65,10 @@ class RLAgent(BaseAgent):
         self.q_table[(state, action)] = new_q
 
     def _get_best_action(self, state):
+        if self.use_dqn:
+            # Placeholder para inferência de rede neuronal (DQN)
+            # return self.model.predict(state)
+            return random.choice(self.actions)
+
         q_values = [self.q_table.get((state, a), 0.0) for a in self.actions]
         return self.actions[np.argmax(q_values)]
