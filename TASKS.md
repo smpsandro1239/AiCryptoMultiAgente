@@ -2,7 +2,7 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 52 de 60 tarefas concluídas (86%)**
+**Progresso Total: 55 de 60 tarefas concluídas (91%)**
 
 ---
 
@@ -57,25 +57,25 @@ Este ficheiro regista o progresso detalhado do desenvolvimento.
 40. [x] Notificações via Telegram e Webhooks.
 41. [x] Monitorização de Saúde dos Agentes (Heartbeats).
 42. [x] Integração Real de WebSockets no `CCXTAdapter` (via `ccxt.pro`).
+43. [x] LLMAgent com RAG (Retrieval-Augmented Generation).
+44. [x] Sistema de Auto-Heal (Auto-Recuperação) no Orchestrator.
+45. [x] Visualização Multi-Portfolio no Dashboard.
 
 ---
 
 ## 🏗️ Em Realização (Fase Atual: v1.4)
-43. [ ] **LLMAgent com RAG (Retrieval-Augmented Generation)**
-    - Adicionar capacidade de consulta a base de conhecimentos externa.
-44. [ ] **Sistema de Auto-Heal (Auto-Recuperação)**
-    - Reiniciar agentes que parem de enviar heartbeats.
-45. [ ] **Visualização Multi-Portfolio no Dashboard**
-    - Mostrar o estado de todas as sub-contas em simultâneo.
+47. [ ] **Modo de Guerra (Panic Button)**
+    - Lógica global para fechar todas as posições e suspender operações.
+48. [ ] **Relatórios PDF de Performance**
+    - Geração de documentos resumidos para auditoria.
+50. [ ] **Agente de Arbitragem Estatística (Pairs Trading)**
+    - Análise de cointegração para estratégias long/short neutras ao mercado.
 
 ---
 
 ## 🚀 Próximas Tarefas (v1.4 - v2.0)
 46. [ ] Templates de Deployment Cloud (Terraform para AWS/GCP).
-47. [ ] Implementação de um "Modo de Guerra" (Botão de pânico que fecha todas as posições).
-48. [ ] Relatórios PDF gerados automaticamente via Dashboard.
 49. [ ] Suporte para Opções e Futuros no `ExecutionAgent`.
-50. [ ] Agente de Arbitragem Estatística (Pairs Trading).
 51. [ ] Melhoria do `RLAgent` para Deep Q-Learning (DQN).
 52. [ ] Interface de chat no Dashboard para falar com o `LLMAgent`.
 53. [ ] Exportação de logs para ELK Stack ou Grafana Loki.

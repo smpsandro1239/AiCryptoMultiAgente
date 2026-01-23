@@ -7,8 +7,23 @@ class ExecutionAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.event_bus.subscribe("trade_approved", self.on_trade_approved)
+        self.event_bus.subscribe("emergency_panic", self.on_emergency_panic)
+        self.war_mode = False
+
+    async def on_emergency_panic(self, data):
+        self.war_mode = True
+        self.logger.error("Emergência recebida no ExecutionAgent. A fechar todas as posições!")
+        # Lógica para fechar posições reais ou simuladas
+        if hasattr(self.context.portfolio, "positions"):
+            symbols = list(self.context.portfolio.positions.keys())
+            for symbol in symbols:
+                await self._execute_market({"symbol": symbol, "side": "SELL", "amount": "ALL"})
+            self.context.portfolio.positions = {}
 
     async def on_trade_approved(self, opp):
+        if self.war_mode:
+            self.logger.warning(f"Troca para {opp['symbol']} bloqueada: MODO DE GUERRA ativo.")
+            return
         strategy = opp.get("execution_strategy", "MARKET")
         self.logger.info(f"{self.name} a iniciar execução {strategy} para {opp['symbol']}...")
 

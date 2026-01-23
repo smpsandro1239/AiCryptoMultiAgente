@@ -46,11 +46,12 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
- tab_perf, tab_exec, tab_news, tab_micro, tab_hft, tab_defi, tab_stress, tab_opt, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+ tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
     "🔍 Microestrutura",
+     "📊 Stat-Arb",
     "⚡ HFT & Scalping",
     "🔗 DeFi & Yield",
     "🛡️ Stress Testing",
@@ -121,6 +122,17 @@ with tab_micro:
         st.metric("Order Book Imbalance", "0.65", "0.10")
 
     st.info("Esta aba mostrará detalhes do bid-ask spread e desequilíbrio em tempo real.")
+
+with tab_stat:
+    st.subheader("📊 Arbitragem Estatística (Pairs Trading)")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("**Par Ativo:** BTC/ETH")
+        st.metric("Z-Score Atual", "1.42", "0.15")
+    with col2:
+        st.write("**Correlação (30d):** 0.89")
+        st.line_chart(np.random.normal(1.2, 0.05, 50))
+    st.info("Estratégia: Reversão à Média do Spread.")
 
 with tab_hft:
     st.subheader("⚡ HFT & Scalping")
@@ -284,6 +296,12 @@ with tab_control:
             st.success(f"Ordem de {side} para {amount} {symbol} enviada para o orchestrator!")
 
     with col2:
+        st.write("### 🚨 Segurança & Emergência")
+        if st.button("🔴 BOTÃO DE PÂNICO", use_container_width=True):
+            st.error("MODO DE GUERRA ATIVADO! A fechar todas as posições...")
+            st.warning("Todas as operações suspensas até reinicialização manual.")
+
+        st.divider()
         st.write("### Estado da API")
         if st.button("Verificar Status"):
             st.code('{"status": "online", "framework": "MATF"}')

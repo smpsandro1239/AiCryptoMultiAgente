@@ -23,6 +23,7 @@ from multiagent_trading.agents.rebalancer import LongShortRebalancingAgent
 from multiagent_trading.agents.risk_analysis import RiskAnalysisAgent
 from multiagent_trading.agents.multi_timeframe import MultiTimeframeScannerAgent
 from multiagent_trading.agents.news import NewsAgent
+from multiagent_trading.agents.stat_arb import StatArbAgent
 
 __all__ = [
     "BaseAgent",
@@ -49,5 +50,6 @@ __all__ = [
     "LongShortRebalancingAgent",
     "RiskAnalysisAgent",
     "MultiTimeframeScannerAgent",
-    "NewsAgent"
+    "NewsAgent",
+    "StatArbAgent"
 ]

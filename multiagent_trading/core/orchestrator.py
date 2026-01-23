@@ -182,3 +182,15 @@ class LiveOrchestrator(Orchestrator):
     def stop(self):
         self.running = False
         self.logger.info("LiveOrchestrator parado.")
+
+    async def trigger_war_mode(self):
+        """
+        Ativa o Modo de Guerra: Fecha todas as posições imediatamente e suspende novas ordens.
+        """
+        self.logger.warning("🚨 MODO DE GUERRA ATIVADO! A fechar todas as posições...")
+
+        # Publicar evento global de emergência
+        await self.event_bus.publish("emergency_panic", {"reason": "WAR_MODE_ACTIVATED"})
+
+        # Suspender a execução de novos steps
+        self.running = False
