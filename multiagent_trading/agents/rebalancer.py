@@ -9,6 +9,7 @@ class LongShortRebalancingAgent(BaseAgent):
         self.target_weights = self.config.get("target_weights", {}) # {"BTC/USDT": 0.5, "ETH/USDT": -0.2}
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         # Lógica de rebalanceamento periódico
         # Em produção, verificaria o desvio dos pesos atuais e geraria ordens
         if self.target_weights:

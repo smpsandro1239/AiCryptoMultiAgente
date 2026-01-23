@@ -24,6 +24,7 @@ class SentimentAgent(BaseAgent):
         await self._publish_sentiment(symbol, sentiment_score)
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         # Continua a gerar sentimento baseado no ruído de mercado
         symbol = data.get("symbol")
         sentiment_score = random.uniform(-1, 1)

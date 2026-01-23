@@ -16,6 +16,7 @@ class RegimeClassifierAgent(BaseAgent):
         self.is_trained = False
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         features = self._extract_features(data)
         if features is None:
             return

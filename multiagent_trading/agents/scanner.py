@@ -2,6 +2,7 @@ from multiagent_trading.agents.base import BaseAgent
 
 class ScannerAgent(BaseAgent):
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         # Suporte para dados multi-símbolo
         if "symbol" in data:
             # Dado único

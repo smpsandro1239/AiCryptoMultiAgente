@@ -7,6 +7,7 @@ class DeFiAgent(BaseAgent):
     Simula a análise de protocolos como Uniswap, Aave e Curve.
     """
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         # Simulação de APY dinâmico (volatilidade DeFi)
         opportunity_chance = random.random()
 

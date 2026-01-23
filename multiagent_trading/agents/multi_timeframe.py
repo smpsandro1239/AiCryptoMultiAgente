@@ -12,6 +12,7 @@ class MultiTimeframeScannerAgent(BaseAgent):
         self.timeframes = self.config.get("timeframes", ["1m", "5m", "15m"])
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         symbol = data.get("symbol")
         if not symbol: return
 

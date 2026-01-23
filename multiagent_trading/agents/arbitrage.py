@@ -6,6 +6,7 @@ class ArbitrageAgent(BaseAgent):
     Agente que identifica discrepâncias de preços entre diferentes exchanges (mock).
     """
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         symbol = data.get("symbol")
         price_ex_a = data.get("close", 100)
 

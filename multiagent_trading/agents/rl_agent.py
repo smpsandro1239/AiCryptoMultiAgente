@@ -18,6 +18,7 @@ class RLAgent(BaseAgent):
         self.last_action = None
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         state = self._get_state(data)
 
         # Atribuir recompensa baseada no PnL se houver uma ação anterior

@@ -6,6 +6,7 @@ class RiskAnalysisAgent(BaseAgent):
     Agente para análise de risco avançada, incluindo Monte Carlo e Value at Risk (VaR).
     """
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         # Cálculo de VaR histórico simulado
         returns = np.random.normal(0.001, 0.02, 1000)
         var_95 = np.percentile(returns, 5)

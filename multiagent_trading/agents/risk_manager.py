@@ -10,6 +10,7 @@ class StopLossTakeProfitAgent(BaseAgent):
         self.take_profit_pct = self.config.get("take_profit_pct", 0.05)
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         symbol = data.get("symbol")
         current_price = data.get("close")
 

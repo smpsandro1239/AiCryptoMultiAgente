@@ -24,7 +24,23 @@ def get_memory_data():
 
 # Sidebar para filtros e status
 st.sidebar.header("🕹️ Controlo do Sistema")
-st.sidebar.success("Sistema Online (v1.0-RC)")
+st.sidebar.success("Sistema Online (v1.1-RC)")
+st.sidebar.divider()
+
+# Monitorização de Saúde (Mock)
+st.sidebar.write("**Saúde dos Agentes**")
+agents_health = {
+    "Regime": "🟢 Ativo",
+    "Scanner": "🟢 Ativo",
+    "Risk": "🟢 Ativo",
+    "Supervisor": "🟢 Ativo",
+    "Execution": "🟢 Ativo",
+    "LLM": "🟡 Latente",
+    "Sentiment": "🟢 Ativo"
+}
+for agent, status in agents_health.items():
+    st.sidebar.caption(f"{agent}: {status}")
+
 st.sidebar.divider()
 st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")

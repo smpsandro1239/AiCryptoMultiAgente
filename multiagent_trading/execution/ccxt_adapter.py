@@ -31,14 +31,20 @@ class CCXTAdapter:
             await asyncio.sleep(60)
 
     async def watch_trades(self, symbol):
-        """Simulação de watch_trades via WebSockets."""
-        while True:
-            # Mock de trade em tempo real
-            trade = {
-                'symbol': symbol,
-                'price': 50000 + (asyncio.get_event_loop().time() % 100),
-                'amount': 0.01,
-                'timestamp': int(time.time() * 1000)
-            }
-            yield trade
-            await asyncio.sleep(1) # Simula trades a cada segundo
+        """Suporte para watch_trades via WebSockets (ccxt.pro se disponível)."""
+        if hasattr(self.exchange, 'has') and self.exchange.has.get('watchTrades'):
+            # Se for uma instância de exchange do ccxt.pro
+            while True:
+                trades = await self.exchange.watch_trades(symbol)
+                for t in trades: yield t
+        else:
+            # Fallback para simulação
+            while True:
+                trade = {
+                    'symbol': symbol,
+                    'price': 50000 + (asyncio.get_event_loop().time() % 100),
+                    'amount': 0.01,
+                    'timestamp': int(time.time() * 1000)
+                }
+                yield trade
+                await asyncio.sleep(1)

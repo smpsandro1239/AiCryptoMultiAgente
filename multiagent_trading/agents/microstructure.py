@@ -6,6 +6,7 @@ class MicrostructureAgent(BaseAgent):
     Agente que analisa spreads de compra e venda e profundidade/desequilíbrio do order book.
     """
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         depth_data = data.get("depth")
         if not depth_data:
             return

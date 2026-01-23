@@ -1,4 +1,6 @@
 ccxt
+cryptography
+requests
 pyyaml
 pandas
 numpy

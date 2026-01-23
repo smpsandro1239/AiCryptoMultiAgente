@@ -7,6 +7,7 @@ class MarketMakerAgent(BaseAgent):
     em torno do preço médio (mid-price).
     """
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         mid_price = data.get("close")
         if not mid_price: return
 

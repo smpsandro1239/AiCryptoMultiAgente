@@ -28,12 +28,29 @@ class Context:
         self.market_data = market_data
         self.memory = memory or PersistentSemanticMemory()
 
+import time
+
 class Orchestrator:
     def __init__(self, agents, context, event_bus, logger):
         self.agents = agents
         self.context = context
         self.event_bus = event_bus
         self.logger = logger
+
+    def check_agents_health(self, timeout=60):
+        """Verifica se algum agente está inativo há mais de X segundos."""
+        inactive_agents = []
+        now = time.time()
+
+        # Lidar com agents como lista ou dict
+        agents_list = self.agents if isinstance(self.agents, list) else self.agents.values()
+
+        for agent in agents_list:
+            if now - agent.last_heartbeat > timeout:
+                inactive_agents.append(agent.name)
+                self.logger.warning(f"Agente detectado como inativo: {agent.name}")
+
+        return inactive_agents
 
     async def step(self, market_snapshot: Dict[str, Any]):
         """

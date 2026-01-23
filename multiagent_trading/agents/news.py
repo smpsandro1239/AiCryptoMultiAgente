@@ -18,6 +18,7 @@ class NewsAgent(BaseAgent):
         ]
 
     async def on_market_update(self, data):
+        await super().on_market_update(data)
         # 10% de probabilidade de gerar uma notícia a cada tick
         if random.random() > 0.9:
             symbol = data.get("symbol", "BTC")
