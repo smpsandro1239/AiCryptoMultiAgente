@@ -24,6 +24,7 @@ from multiagent_trading.agents.risk_analysis import RiskAnalysisAgent
 from multiagent_trading.agents.multi_timeframe import MultiTimeframeScannerAgent
 from multiagent_trading.agents.news import NewsAgent
 from multiagent_trading.agents.stat_arb import StatArbAgent
+from multiagent_trading.agents.governance import GovernanceAgent
 
 __all__ = [
     "BaseAgent",
@@ -51,5 +52,6 @@ __all__ = [
     "RiskAnalysisAgent",
     "MultiTimeframeScannerAgent",
     "NewsAgent",
-    "StatArbAgent"
+    "StatArbAgent",
+    "GovernanceAgent"
 ]

@@ -46,7 +46,7 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
- tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+ tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
@@ -57,6 +57,7 @@ st.sidebar.info("Língua: Português (Portugal)")
     "🛡️ Stress Testing",
     "🛠️ Builder & Otimização",
      "💬 Chat IA",
+     "🏛️ Governação",
      "💼 Multi-Portfolio",
     "⏪ Trade Replay",
     "🏪 Mercado de Estratégias",
@@ -233,6 +234,22 @@ with tab_chat:
             st.markdown(response)
             st.session_state.messages.append({"role": "assistant", "content": response})
 
+with tab_gov:
+    st.subheader("🏛️ Governação Descentralizada")
+    st.write("Votações activas para alteração de parâmetros do sistema.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("**Proposta #1: Reduzir Taxa de Comissão**")
+        st.caption("Alterar de 0.1% para 0.08%")
+        st.progress(66) # 2/3 votos
+        st.button("Votar Favor", key="gov_v1")
+
+    with col2:
+        st.write("**Histórico de Decisões**")
+        st.write("- 2026-01-20: Aprovado aumento de limite de risco VaR.")
+        st.write("- 2026-01-18: Rejeitada nova estratégia Arbitrage_v2.")
+
 with tab_port:
     st.subheader("💼 Gestão de Múltiplos Portfólios")
     st.write("Estado consolidado de todas as sub-contas.")
@@ -246,7 +263,10 @@ with tab_port:
     for name, data in portfolios.items():
         col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
         with col1: st.write(f"**{name}**")
-        with col2: st.metric("Saldo", f"${data['balance']:,.2f}")
+        with col2:
+            st.write("**Saldos:**")
+            st.caption(f"USD: ${data['balance']:,.2f}")
+            st.caption(f"BTC: {data['balance']/50000:.4f}")
         with col3: st.metric("PnL (%)", f"{data['pnl']}%")
         with col4: st.write(data['status'])
 

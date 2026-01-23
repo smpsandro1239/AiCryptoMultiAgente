@@ -2,7 +2,7 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 57 de 60 tarefas concluídas (95%)**
+**Progresso Total: 59 de 60 tarefas concluídas (98%)**
 
 ---
 
@@ -64,23 +64,24 @@ Este ficheiro regista o progresso detalhado do desenvolvimento.
 48. [x] Relatórios PDF de Performance (via fpdf2).
 49. [x] Suporte para Futuros e Alavancagem no `ExecutionAgent`.
 50. [x] Agente de Arbitragem Estatística (Pairs Trading).
+52. [x] Interface de Chat IA no Dashboard.
+54. [x] Auditoria de Latência (Profiling) no `EventBus`.
 
 ---
 
-## 🏗️ Em Realização (Fase Atual: v1.5)
-52. [ ] **Interface de Chat IA no Dashboard**
-    - Interação direta com o `LLMAgent` para insights de mercado.
-54. [ ] **Auditoria de Latência (Profiling)**
-    - Medição de performance do `EventBus`.
+## 🏗️ Em Realização (Fase Atual: v1.6)
+55. [ ] **Suporte Multi-Moeda no Portfólio**
+    - Saldos simultâneos em USD, EUR, BTC, etc.
+56. [ ] **Agente de Governança**
+    - Votação de parâmetros globais por agentes.
+53. [ ] **Exportação de Logs (ELK/Grafana)**
+    - Conector para sistemas externos de observabilidade.
 
 ---
 
-## 🚀 Próximas Tarefas (v1.5 - v2.0)
+## 🚀 Próximas Tarefas (v1.6 - v2.0)
 46. [ ] Templates de Deployment Cloud (Terraform para AWS/GCP).
 51. [ ] Melhoria do `RLAgent` para Deep Q-Learning (DQN).
-53. [ ] Exportação de logs para ELK Stack ou Grafana Loki.
-55. [ ] Suporte para multi-moeda de conta (USD, EUR, BTC).
-56. [ ] Agente de Governança (Votação para mudar parâmetros globais).
 57. [ ] Documentação "Get Started" em vídeo/tutorial interativo.
 58. [ ] Suite de testes de stress de latência (1000+ agentes).
 59. [ ] Integração com Hardware Wallets para aprovação de saques (Segurança fria).
