@@ -2,11 +2,11 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 59 de 60 tarefas concluídas (98%)**
+**Progresso Total: 62 de 70 tarefas concluídas (88%)**
 
 ---
 
-## ✅ Concluído (v0.6 - v1.5)
+## ✅ Concluído (v0.6 - v1.6)
 
 ### Core & Infraestrutura
 1. [x] Refatoração de Agentes para ficheiros individuais.
@@ -66,23 +66,23 @@ Este ficheiro regista o progresso detalhado do desenvolvimento.
 50. [x] Agente de Arbitragem Estatística (Pairs Trading).
 52. [x] Interface de Chat IA no Dashboard.
 54. [x] Auditoria de Latência (Profiling) no `EventBus`.
+55. [x] Suporte Multi-Moeda no Portfólio (Balances dict).
+56. [x] Agente de Governança (Sistema de Votação).
+53. [x] Exportação de Logs (LoggingExporter para ELK/Loki).
 
 ---
 
-## 🏗️ Em Realização (Fase Atual: v1.6)
-55. [ ] **Suporte Multi-Moeda no Portfólio**
-    - Saldos simultâneos em USD, EUR, BTC, etc.
-56. [ ] **Agente de Governança**
-    - Votação de parâmetros globais por agentes.
-53. [ ] **Exportação de Logs (ELK/Grafana)**
-    - Conector para sistemas externos de observabilidade.
+## 🏗️ Em Realização (Fase Atual: v1.7)
+46. [ ] **Templates de Deployment Cloud (Terraform)**
+    - Infraestrutura como código para AWS/GCP.
+51. [ ] **DQN (Deep Q-Learning) no RLAgent**
+    - Evolução do agente de reforço com redes neuronais.
+58. [ ] **Suite de Testes de Stress**
+    - Simulação com 1000+ agentes em simultâneo.
 
 ---
 
-## 🚀 Próximas Tarefas (v1.6 - v2.0)
-46. [ ] Templates de Deployment Cloud (Terraform para AWS/GCP).
-51. [ ] Melhoria do `RLAgent` para Deep Q-Learning (DQN).
-57. [ ] Documentação "Get Started" em vídeo/tutorial interativo.
-58. [ ] Suite de testes de stress de latência (1000+ agentes).
-59. [ ] Integração com Hardware Wallets para aprovação de saques (Segurança fria).
+## 🚀 Próximas Tarefas (v1.7 - v2.0)
+57. [ ] Documentação "Get Started" (Guia Completo).
+59. [ ] Integração com Hardware Wallets (Mock Security).
 60. [ ] Versão Mobile-Friendly do Dashboard.

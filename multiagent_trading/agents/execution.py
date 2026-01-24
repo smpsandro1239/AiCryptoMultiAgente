@@ -40,7 +40,8 @@ class ExecutionAgent(BaseAgent):
 
         # Atualizar portfólio e memória
         self.context.portfolio.total_value += 10 # Simular lucro
-        opp["execution_timestamp"] = time.time()
+        opp["timestamp"] = time.time() # Key standard para o visualizador
+        opp["execution_timestamp"] = opp["timestamp"]
         self.context.memory.add("trade", opp)
 
     async def _execute_market(self, opp):

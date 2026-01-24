@@ -46,7 +46,7 @@ st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
 # Tabs do Dashboard
- tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",

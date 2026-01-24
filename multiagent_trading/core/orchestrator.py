@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 import pandas as pd
 from typing import Dict, Any, List
 from multiagent_trading.core.logger import Logger
@@ -33,8 +34,6 @@ class Context:
         self.portfolio = portfolio
         self.market_data = market_data
         self.memory = memory or PersistentSemanticMemory()
-
-import time
 
 class Orchestrator:
     def __init__(self, agents, context, event_bus, logger):

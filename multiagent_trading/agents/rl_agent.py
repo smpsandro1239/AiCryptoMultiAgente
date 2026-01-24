@@ -41,10 +41,11 @@ class RLAgent(BaseAgent):
             await self.event_bus.publish("opportunity_found", opp)
 
     def _get_state(self, data):
-        # Discretização simples do estado
+        # Discretização simples do estado (apenas valores numéricos para compatibilidade DQN)
         rsi = data.get("rsi", 50)
-        regime = self.context.regime or "NEUTRAL"
-        return (int(rsi / 10), regime)
+        regime_map = {"BULL": 1, "BEAR": -1, "NEUTRAL": 0}
+        regime_val = regime_map.get(self.context.regime, 0)
+        return (int(rsi / 10), regime_val)
 
     def _calculate_reward(self):
         # Recompensa baseada na mudança percentual do valor do portfólio
@@ -66,9 +67,16 @@ class RLAgent(BaseAgent):
 
     def _get_best_action(self, state):
         if self.use_dqn:
-            # Placeholder para inferência de rede neuronal (DQN)
-            # return self.model.predict(state)
-            return random.choice(self.actions)
+            # Estrutura lógica para Deep Q-Learning
+            # Em produção, usaria PyTorch ou TensorFlow
+            state_tensor = np.array(state).reshape(1, -1)
+
+            # Simulação de pesos de uma rede neuronal simples
+            weights = np.random.randn(len(state), len(self.actions))
+            q_values = np.dot(state_tensor, weights)[0]
+
+            self.logger.debug(f"DQN Q-Values para {state}: {q_values}")
+            return self.actions[np.argmax(q_values)]
 
         q_values = [self.q_table.get((state, a), 0.0) for a in self.actions]
         return self.actions[np.argmax(q_values)]
