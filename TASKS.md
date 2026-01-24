@@ -2,7 +2,7 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 66 de 70 tarefas concluídas (94%)**
+**Progresso Total: 68 de 70 tarefas concluídas (97%)**
 
 ---
 

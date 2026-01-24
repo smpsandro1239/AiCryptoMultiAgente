@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 
 class PerformanceReport:
     """
@@ -21,6 +22,14 @@ class PerformanceReport:
         ========================================
         """
         return summary
+
+    def save_as_csv(self, filepath):
+        """Exporta os resultados do backtest para um ficheiro CSV."""
+        df = pd.DataFrame({
+            "step": range(len(self.results.get("pnl", []))),
+            "pnl": self.results.get("pnl", [])
+        })
+        df.to_csv(filepath, index=False)
 
     def save_to_file(self, filepath):
         with open(filepath, 'w', encoding='utf-8') as f:

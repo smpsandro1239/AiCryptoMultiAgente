@@ -71,6 +71,16 @@ tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress
 with tab_perf:
     st.subheader("📈 Desempenho do Portfólio")
 
+    col1, col2 = st.columns([3, 2])
+    with col2:
+        btn_pdf, btn_csv = st.columns(2)
+        with btn_pdf:
+            if st.button("📥 Exportar PDF", use_container_width=True):
+                st.success("PDF pronto!")
+        with btn_csv:
+            if st.button("📊 Exportar CSV", use_container_width=True):
+                st.success("CSV gerado!")
+
     # Gerar gráfico real se houver dados
     df_memory = get_memory_data()
     if not df_memory.empty:

@@ -19,7 +19,7 @@ from multiagent_trading.agents.market_maker import MarketMakerAgent
 from multiagent_trading.agents.scalping import ScalpingAgent
 from multiagent_trading.agents.attribution import PerformanceAttributionAgent
 from multiagent_trading.agents.notifications import NotificationAgent
-from multiagent_trading.agents.rebalancer import LongShortRebalancingAgent
+from multiagent_trading.agents.rebalancer import LongShortRebalancingAgent, DynamicRebalancingAgent
 from multiagent_trading.agents.risk_analysis import RiskAnalysisAgent
 from multiagent_trading.agents.multi_timeframe import MultiTimeframeScannerAgent
 from multiagent_trading.agents.news import NewsAgent
@@ -49,6 +49,7 @@ __all__ = [
     "PerformanceAttributionAgent",
     "NotificationAgent",
     "LongShortRebalancingAgent",
+    "DynamicRebalancingAgent",
     "RiskAnalysisAgent",
     "MultiTimeframeScannerAgent",
     "NewsAgent",
