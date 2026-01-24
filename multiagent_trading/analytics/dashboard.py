@@ -45,6 +45,9 @@ st.sidebar.divider()
 st.sidebar.write("**Configurações de Língua**")
 st.sidebar.info("Língua: Português (Portugal)")
 
+# Otimização móvel: Usar sidebar escondida por defeito e largura total
+# (Já definido no st.set_page_config)
+
 # Tabs do Dashboard
 tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
     "📈 Desempenho",
@@ -261,14 +264,16 @@ with tab_port:
     }
 
     for name, data in portfolios.items():
-        col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
-        with col1: st.write(f"**{name}**")
-        with col2:
-            st.write("**Saldos:**")
-            st.caption(f"USD: ${data['balance']:,.2f}")
-            st.caption(f"BTC: {data['balance']/50000:.4f}")
-        with col3: st.metric("PnL (%)", f"{data['pnl']}%")
-        with col4: st.write(data['status'])
+        with st.expander(f"💼 {name} - Status: {data['status']}", expanded=True):
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.write("**Saldos**")
+                st.caption(f"USD: ${data['balance']:,.2f}")
+                st.caption(f"BTC: {data['balance']/50000:.4f}")
+            with col2:
+                st.metric("PnL (%)", f"{data['pnl']}%")
+            with col3:
+                st.button("Gerir", key=f"manage_{name}")
 
 with tab_market:
     st.subheader("🏪 Mercado de Estratégias e Plugins")

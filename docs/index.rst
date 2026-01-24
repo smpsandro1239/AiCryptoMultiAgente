@@ -6,6 +6,7 @@ Welcome to Multi-Agent Trading Framework (MATF)'s documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   get_started
    api
 
 Indices and tables

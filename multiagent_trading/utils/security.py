@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from cryptography.fernet import Fernet
 
 class SecurityManager:
@@ -39,3 +40,14 @@ class SecurityManager:
 
         os.environ[f"{exchange_id.upper()}_API_KEY"] = api_key # Fallback para ambiente
         os.environ[f"{exchange_id.upper()}_API_SECRET"] = secret
+
+    @staticmethod
+    async def request_hardware_approval(transaction_data: dict) -> bool:
+        """
+        Simula a aprovação manual de uma transação através de uma Hardware Wallet (ex: Ledger, Trezor).
+        Em produção, este método esperaria por um sinal físico do dispositivo USB/Bluetooth.
+        """
+        print(f"[SECURITY] Aguardando aprovação física no dispositivo para: {transaction_data.get('symbol')}")
+        # Simulação de espera por aprovação (sempre retorna True neste mock)
+        await asyncio.sleep(0.5)
+        return True
