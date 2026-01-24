@@ -2,11 +2,11 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 65 de 70 tarefas concluídas (93%)**
+**Progresso Total: 63 de 70 tarefas concluídas (90%)**
 
 ---
 
-## ✅ Concluído (v0.6 - v1.7)
+## ✅ Concluído (v0.6 - v1.8)
 
 ### Core & Infraestrutura
 1. [x] Refatoração de Agentes para ficheiros individuais.
@@ -72,17 +72,21 @@ Este ficheiro regista o progresso detalhado do desenvolvimento.
 46. [x] Templates de Deployment Cloud (Terraform para AWS).
 51. [x] DQN (Deep Q-Learning) no RLAgent (Estrutura base).
 58. [x] Suite de Testes de Stress (tests/stress_test_agents.py).
+57. [x] Guia "Get Started" e Documentação Inicial.
+59. [x] Integração com Hardware Wallets (Mock Approval).
+60. [x] Dashboard Mobile-Friendly (Responsivo).
+61. [x] Backtest Paralelizado (Multiprocessing).
+62. [x] Sistema de Reputação de Agentes no `SupervisorAgent`.
+63. [x] Aba "Log de Auditoria" no Dashboard.
 
 ---
 
-## 🏗️ Em Realização (Fase Atual: v1.7)
-57. [ ] **Documentação "Get Started" (Guia Completo)**
-    - Manual passo-a-passo para novos utilizadores.
-59. [ ] **Hardware Wallets Integration (Mock)**
-    - Camada de segurança adicional para aprovação de transações.
-60. [ ] **Dashboard Mobile-Friendly**
-    - Otimização da interface para dispositivos móveis.
+## 🏗️ Em Realização (Fase Atual: v1.9)
+64. [ ] **Integração com Base de Dados Vectorial Real**
+    - Suporte para ChromaDB ou Pinecone (Mock dinâmico).
+65. [ ] **Alerta de Anomalia via ML**
+    - Detecção de desvios de mercado usando Isolation Forest.
 
 ---
 
-## 🚀 Próximas Tarefas (v1.7 - v2.0)
+## 🚀 Próximas Tarefas (v1.9 - v2.0)

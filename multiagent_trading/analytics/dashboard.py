@@ -49,7 +49,7 @@ st.sidebar.info("Língua: Português (Portugal)")
 # (Já definido no st.set_page_config)
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_control, tab_audit = st.tabs([
+tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_audit, tab_control = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
@@ -354,18 +354,25 @@ with tab_control:
             st.code('{"status": "online", "framework": "MATF"}')
 
 with tab_audit:
-    st.subheader("Auditoria de Decisões dos Agentes")
+    st.subheader("📋 Log de Auditoria do Sistema")
+    st.write("Fluxo completo de eventos e decisões do framework.")
+
     df_memory = get_memory_data()
     if not df_memory.empty:
-        st.dataframe(df_memory)
+        # Filtro de eventos
+        event_filter = st.multiselect("Filtrar Eventos", df_memory['key'].unique(), default=df_memory['key'].unique())
+        df_filtered = df_memory[df_memory['key'].isin(event_filter)]
+
+        st.dataframe(df_filtered, use_container_width=True)
 
         st.divider()
-        st.subheader("Raciocínio IA (LLM)")
+        st.subheader("🤖 Raciocínio IA (Audit Trail)")
         llm_reasoning = df_memory[df_memory['value'].str.contains('rationale', na=False)]
         if not llm_reasoning.empty:
             for index, row in llm_reasoning.iterrows():
                 val = json.loads(row['value'])
-                st.write(f"**{row['timestamp']} - {val.get('symbol')}**")
-                st.info(val.get('rationale'))
+                with st.expander(f"📌 {row['timestamp']} - {val.get('symbol')} ({val.get('side')})"):
+                    st.write(f"**Agente:** {val.get('agent', 'LLMAgent')}")
+                    st.info(val.get('rationale'))
     else:
         st.info("Nenhum registo de auditoria encontrado.")
