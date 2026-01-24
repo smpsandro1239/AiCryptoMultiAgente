@@ -2,11 +2,11 @@
 
 Este ficheiro regista o progresso detalhado do desenvolvimento.
 
-**Progresso Total: 63 de 70 tarefas concluídas (90%)**
+**Progresso Total: 66 de 70 tarefas concluídas (94%)**
 
 ---
 
-## ✅ Concluído (v0.6 - v1.8)
+## ✅ Concluído (v0.6 - v1.9)
 
 ### Core & Infraestrutura
 1. [x] Refatoração de Agentes para ficheiros individuais.

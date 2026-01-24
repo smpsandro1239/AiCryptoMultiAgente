@@ -1,6 +1,7 @@
 ccxt
 cryptography
 requests
+python-dotenv
 pyyaml
 pandas
 numpy

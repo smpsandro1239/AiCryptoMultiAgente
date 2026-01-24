@@ -49,7 +49,7 @@ st.sidebar.info("Língua: Português (Portugal)")
 # (Já definido no st.set_page_config)
 
 # Tabs do Dashboard
-tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_port, tab_replay, tab_market, tab_audit, tab_control = st.tabs([
+tab_perf, tab_exec, tab_news, tab_micro, tab_stat, tab_hft, tab_defi, tab_stress, tab_opt, tab_chat, tab_gov, tab_hier, tab_port, tab_replay, tab_market, tab_audit, tab_control = st.tabs([
     "📈 Desempenho",
     "💸 Execuções",
     "📰 Sentimento Global",
@@ -236,6 +236,24 @@ with tab_chat:
             response = f"Análise para '{prompt}': O mercado mostra sinais de acumulação. Recomendo cautela no par BTC/USDT dada a volatilidade atual."
             st.markdown(response)
             st.session_state.messages.append({"role": "assistant", "content": response})
+
+with tab_hier:
+    st.subheader("🕸️ Hierarquia e Interação de Agentes")
+    st.write("Visualização das dependências e fluxo de dados entre os agentes ativos.")
+
+    # Simulação de Grafo de Hierarquia
+    st.graphviz_chart('''
+        digraph {
+            "Scanner" -> "Risk"
+            "Risk" -> "Supervisor"
+            "Sentiment" -> "LLM"
+            "LLM" -> "Supervisor"
+            "Supervisor" -> "Execution"
+            "MLRegime" -> "Scanner"
+            "News" -> "Sentiment"
+        }
+    ''')
+    st.info("Fluxo Principal: Market Data -> Scanner -> Risk -> Supervisor -> Execution")
 
 with tab_gov:
     st.subheader("🏛️ Governação Descentralizada")
