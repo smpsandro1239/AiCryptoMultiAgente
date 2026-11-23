@@ -53,6 +53,7 @@ class PortfolioState:
         if self.positions:
             raise ValueError("Não é possível definir total_value com posições abertas.")
         self.cash = float(value)
+        self._update_peak_equity()
 
     @property
     def unrealized_pnl(self) -> float:
