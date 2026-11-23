@@ -1,11 +1,14 @@
-import unittest
 import asyncio
+import unittest
+
 from multiagent_trading.core.orchestrator import EventBus
+
 
 class TestEventBus(unittest.TestCase):
     def test_subscribe_publish(self):
         bus = EventBus()
         received = []
+
         async def callback(data):
             received.append(data)
 
@@ -16,6 +19,7 @@ class TestEventBus(unittest.TestCase):
         loop.run_until_complete(bus.publish("test", "hello"))
 
         self.assertEqual(received, ["hello"])
+
 
 if __name__ == "__main__":
     unittest.main()
