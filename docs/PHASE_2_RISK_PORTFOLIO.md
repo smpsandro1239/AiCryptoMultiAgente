@@ -8,7 +8,7 @@ Esta fase introduz contabilidade determinística de portefólio e uma barreira i
 
 O RiskEngine recebe uma intenção com symbol, side, entry_price e stop_price e o estado do portefólio. Ignora qualquer campo risk_ok fornecido por agentes. A decisão RiskDecision contém aprovação, quantidade, notional, risco estimado e motivos de rejeição.
 
-Limites configuráveis: risco máximo por trade, notional máximo por ordem, fração máxima por posição, exposição agregada máxima, perda diária máxima e distância mínima ao stop. Dados inválidos, stop ausente ou estado inconsistente resultam em rejeição (fail closed).
+Limites configuráveis: risco máximo por trade, notional máximo por ordem, fração máxima por posição, exposição agregada máxima, perda diária máxima e distância mínima ao stop. O mesmo RiskEngine pode ser injetado em Context(risk_engine=...) e é partilhado pelo RiskAgent e pelo ExecutionAgent. Dados inválidos, stop ausente ou estado inconsistente resultam em rejeição (fail closed).
 
 O sizing é baseado na distância ao stop e limitado pelo saldo e limites de exposição. Ainda não considera volatilidade, correlação, liquidez, funding, slippage ou risco de execução.
 
@@ -34,7 +34,7 @@ PortfolioState mantém cash, posições spot líquidas, preço médio ponderado,
 - O estado do portefólio ainda não tem persistência transacional nem reconciliação externa.
 - Não existem ordens parciais, shorting, margem, derivados, empréstimos ou funding.
 - O controlo diário usa daily_pnl fornecido pelo contexto; falta construir a equity curve e o circuito de drawdown.
-- O RiskEngine de execução usa limites predefinidos; falta centralizar e injetar uma configuração única e imutável.
+- A configuração única pode ser injetada no Context; falta carregá-la de configuração validada e protegida por ambiente.
 - O scanner demonstrativo não fornece preços/stop por si; oportunidades sem esses dados são corretamente rejeitadas.
 - Não há integração de trading real nem deve ser adicionada antes de auditoria independente.
 
