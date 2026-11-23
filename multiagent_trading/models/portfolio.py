@@ -22,11 +22,19 @@ class PortfolioState:
     positions: dict[str, Position] = field(default_factory=dict)
     marks: dict[str, float] = field(default_factory=dict)
     fees_paid: float = 0.0
+    peak_equity: float = field(init=False)
     _realized_pnl: float = field(default=0.0, init=False, repr=False)
 
     def __post_init__(self) -> None:
         self._validate_non_negative(self.initial_value, "initial_value")
         self.cash = float(self.initial_value)
+        self.peak_equity = float(self.initial_value)
+
+    def _update_peak_equity(self) -> None:
+        equity = self.total_value
+        if not isfinite(equity):
+            raise ValueError("Equity do portefólio não finita.")
+        self.peak_equity = max(self.peak_equity, equity)
 
     @staticmethod
     def _validate_non_negative(value: float, name: str) -> None:
@@ -72,6 +80,7 @@ class PortfolioState:
         if price == 0:
             raise ValueError("O preço tem de ser superior a zero.")
         self.marks[symbol] = float(price)
+        self._update_peak_equity()
 
     def apply_fill(
         self,
@@ -134,11 +143,18 @@ class PortfolioState:
 
         self.fees_paid = new_fees_paid
         self.marks[symbol] = float(price)
+        self._update_peak_equity()
 
     def snapshot(self) -> dict[str, object]:
         return {
             "cash": self.cash,
             "equity": self.total_value,
+            "peak_equity": self.peak_equity,
+            "drawdown_fraction": (
+                max(0.0, (self.peak_equity - self.total_value) / self.peak_equity)
+                if self.peak_equity > 0
+                else 0.0
+            ),
             "exposure": self.exposure,
             "realized_pnl": self.realized_pnl,
             "unrealized_pnl": self.unrealized_pnl,
