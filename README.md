@@ -20,9 +20,9 @@ Framework experimental de trading multiagente, orientado a eventos e desenvolvid
 | Orchestrator | Implementado | Atualiza contexto e publica eventos |
 | RegimeAgent | Protótipo | Define o regime como BULL sem análise quantitativa |
 | ScannerAgent | Protótipo | Emite oportunidade demonstrativa; não calcula sinal/stop completos |
-| RiskEngine | Primeira implementação | Sizing por distância ao stop, limites de notional/exposição/perda diária; ainda sem volatilidade, correlação ou liquidez |
+| RiskEngine | Primeira implementação | Sizing por distância ao stop, comissões estimadas, notional/exposição, perda diária e drawdown; ainda sem volatilidade, correlação ou liquidez |
 | RiskAgent | Integrado nesta fase | Partilha o RiskEngine injetado no Context; rejeita dados incompletos e ignora risk_ok |
-| PortfolioState | Implementado para simulação | Posições spot, preço médio, cash, PnL e comissões; sem persistência transacional |
+| PortfolioState | Implementado para simulação | Posições spot, preço médio incluindo taxas, cash, PnL, comissões e high-water mark; sem persistência transacional |
 | SupervisorAgent | Protegido por decisão explícita | Só inicia raciocínio e aprova quando risk_decision.approved é true |
 | LLMAgent | Simulação | Produz texto determinístico; não consulta um modelo LLM |
 | ExecutionAgent | Paper-only | Revalida risco, bloqueia duplicados durante a sessão e aplica fills simulados; sem exchange |
@@ -120,7 +120,8 @@ O exemplo atual demonstra o fluxo de eventos e não constitui um backtest financ
 - [x] Introduzir RiskEngine com sizing e limites de exposição.
 - [x] Introduzir contabilidade de portefólio e fills simulados.
 - [x] Exigir aprovação de risco no fluxo de agentes e revalidar antes do fill.
-- [ ] Centralizar configuração de risco e implementar circuit breaker por drawdown.
+- [x] Implementar circuit breaker por perda diária e drawdown com high-water mark em memória.
+- [ ] Persistir equity curve/high-water mark e definir limites diários a partir do equity de início do dia.
 - [ ] Persistir ordens, fills e chaves de idempotência.
 - [ ] Modelar comissões, slippage, funding e latência no backtester.
 - [ ] Normalizar fusos horários, ordenação temporal e gaps.
