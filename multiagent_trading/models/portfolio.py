@@ -97,6 +97,8 @@ class PortfolioState:
 
         notional = float(quantity) * float(price)
         fee = notional * float(fee_rate)
+        if not isfinite(notional) or not isfinite(fee):
+            raise ValueError("Notional e comissão têm de ser finitos.")
         position = self.positions.get(symbol)
 
         if side == "BUY":
@@ -113,13 +115,17 @@ class PortfolioState:
             if position is None or quantity > position.quantity:
                 raise ValueError("Não é permitido vender mais do que a posição disponível.")
             realized = float(quantity) * (float(price) - position.average_entry_price) - fee
-            self._realized_pnl += realized
+            new_realized_pnl = self._realized_pnl + realized
+            new_cash = self.cash + notional - fee
             remaining = position.quantity - float(quantity)
+            if not all(isfinite(value) for value in (realized, new_realized_pnl, new_cash)):
+                raise ValueError("O fill produziria valores contabilísticos não finitos.")
+            self._realized_pnl = new_realized_pnl
             if remaining == 0:
                 self.positions.pop(symbol)
             else:
                 self.positions[symbol] = Position(remaining, position.average_entry_price)
-            self.cash += notional - fee
+            self.cash = new_cash
 
         self.fees_paid += fee
         self.marks[symbol] = float(price)
