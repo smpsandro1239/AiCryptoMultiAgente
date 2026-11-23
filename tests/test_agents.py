@@ -34,6 +34,7 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         self.fills = []
         self.rejections = []
         self.event_bus.subscribe("paper_fill", self.fills.append)
+        self.assertIs(self.risk.risk_engine, self.execution.risk_engine)
         self.event_bus.subscribe("trade_rejected", self.rejections.append)
 
     async def test_only_risk_approved_opportunity_reaches_paper_execution(self):
