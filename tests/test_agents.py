@@ -6,8 +6,8 @@ from multiagent_trading.agents.risk import RiskAgent
 from multiagent_trading.agents.scanner import ScannerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.core.logger import Logger
-from multiagent_trading.core.risk_engine import RiskEngine, RiskLimits
 from multiagent_trading.core.orchestrator import Context, EventBus
+from multiagent_trading.core.risk_engine import RiskEngine, RiskLimits
 
 
 class InMemoryStore:
