@@ -17,6 +17,7 @@ class RiskLimits:
     max_daily_loss_fraction: float = 0.05
     min_stop_distance_fraction: float = 0.001
     estimated_fee_rate: float = 0.001
+    max_drawdown_fraction: float = 0.15
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,7 @@ class RiskEngine:
             "max_position_fraction",
             "max_portfolio_exposure_fraction",
             "max_daily_loss_fraction",
+            "max_drawdown_fraction",
         ):
             if not 0 < getattr(self.limits, name) <= 1:
                 raise ValueError(f"{name} tem de estar em (0, 1].")
@@ -120,9 +122,6 @@ class RiskEngine:
             # intents therefore carry a protective stop below the entry price.
             if stop >= entry:
                 raise ValueError("O stop de uma posição spot longa tem de ficar abaixo da entrada.")
-            if daily <= -equity * self.limits.max_daily_loss_fraction:
-                raise ValueError("Limite de perda diária atingido.")
-
             if side == "SELL":
                 position = portfolio.positions.get(symbol)
                 available = float(position.quantity) if position else 0.0
@@ -139,6 +138,15 @@ class RiskEngine:
                 return RiskDecision(
                     True, symbol, side, requested, notional, requested * distance
                 )
+
+            if daily <= -equity * self.limits.max_daily_loss_fraction:
+                raise ValueError("Circuit breaker: limite de perda diária atingido.")
+            peak_equity = float(portfolio.peak_equity)
+            if not isfinite(peak_equity) or peak_equity < equity:
+                raise ValueError("High-water mark do portefólio inválido.")
+            drawdown = (peak_equity - equity) / peak_equity
+            if drawdown >= self.limits.max_drawdown_fraction:
+                raise ValueError("Circuit breaker: limite de drawdown máximo atingido.")
 
             risk_budget = equity * self.limits.risk_per_trade
             quantity_by_risk = risk_budget / distance
