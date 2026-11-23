@@ -97,20 +97,25 @@ class PortfolioState:
 
         notional = float(quantity) * float(price)
         fee = notional * float(fee_rate)
-        if not isfinite(notional) or not isfinite(fee):
+        new_fees_paid = self.fees_paid + fee
+        if not all(isfinite(value) for value in (notional, fee, new_fees_paid)):
             raise ValueError("Notional e comissão têm de ser finitos.")
         position = self.positions.get(symbol)
 
         if side == "BUY":
-            if notional + fee > self.cash:
+            total_cost = notional + fee
+            new_cash = self.cash - total_cost
+            if total_cost > self.cash:
                 raise ValueError("Saldo insuficiente para o fill simulado.")
             current = position or Position()
             new_quantity = current.quantity + float(quantity)
             new_average = (
-                current.quantity * current.average_entry_price + notional + fee
+                current.quantity * current.average_entry_price + total_cost
             ) / new_quantity
+            if not all(isfinite(value) for value in (new_cash, new_quantity, new_average)):
+                raise ValueError("O fill produziria valores contabilísticos não finitos.")
             self.positions[symbol] = Position(new_quantity, new_average)
-            self.cash -= notional + fee
+            self.cash = new_cash
         else:
             if position is None or quantity > position.quantity:
                 raise ValueError("Não é permitido vender mais do que a posição disponível.")
@@ -127,7 +132,7 @@ class PortfolioState:
                 self.positions[symbol] = Position(remaining, position.average_entry_price)
             self.cash = new_cash
 
-        self.fees_paid += fee
+        self.fees_paid = new_fees_paid
         self.marks[symbol] = float(price)
 
     def snapshot(self) -> dict[str, object]:
