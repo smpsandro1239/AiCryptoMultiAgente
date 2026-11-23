@@ -90,7 +90,7 @@ O pipeline de CI executa testes e verificações de lint nos ficheiros de núcle
 
 ## Executar o exemplo
 
-O exemplo atual espera um ficheiro CSV de mercado. A ausência do ficheiro ativa dados de demonstração no carregador:
+O exemplo aceita um ficheiro CSV de mercado. Para permanecer executável sem dados externos, solicita explicitamente candles sintéticos:
 
 ```bash
 python examples/backtest_example.py
@@ -112,7 +112,8 @@ python examples/backtest_example.py
 - [x] Documentar o estado real dos agentes e do simulador.
 - [x] Melhorar o EventBus e adicionar testes de unidade.
 - [x] Introduzir CI para testes e lint do núcleo.
-- [ ] Validar e normalizar dados OHLCV.
+- [x] Rejeitar dados OHLCV ausentes por omissão e validar candles CSV.
+- [ ] Normalizar fusos horários, ordenação temporal e gaps.
 - [ ] Definir contratos de eventos e schemas.
 - [ ] Implementar sizing, exposição, drawdown e limites de risco reais.
 - [ ] Implementar contabilidade de posições, ordens e fills.
