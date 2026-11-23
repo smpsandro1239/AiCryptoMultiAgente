@@ -67,7 +67,13 @@ class Context:
 class Orchestrator:
     """Coordinates market updates through the event bus."""
 
-    def __init__(self, agents: dict[str, Any], context: Context, event_bus: EventBus, logger: Logger):
+    def __init__(
+        self,
+        agents: dict[str, Any],
+        context: Context,
+        event_bus: EventBus,
+        logger: Logger,
+    ):
         self.agents = agents
         self.context = context
         self.event_bus = event_bus
