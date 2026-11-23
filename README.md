@@ -21,7 +21,7 @@ Framework experimental de trading multiagente, orientado a eventos e desenvolvid
 | RegimeAgent | Protótipo | Define o regime como BULL sem análise quantitativa |
 | ScannerAgent | Protótipo | Emite oportunidade demonstrativa; não calcula sinal/stop completos |
 | RiskEngine | Primeira implementação | Sizing por distância ao stop, limites de notional/exposição/perda diária; ainda sem volatilidade, correlação ou liquidez |
-| RiskAgent | Integrado nesta fase | Rejeita dados incompletos e não confia em risk_ok do agente |
+| RiskAgent | Integrado nesta fase | Partilha o RiskEngine injetado no Context; rejeita dados incompletos e ignora risk_ok |
 | PortfolioState | Implementado para simulação | Posições spot, preço médio, cash, PnL e comissões; sem persistência transacional |
 | SupervisorAgent | Protegido por decisão explícita | Só inicia raciocínio e aprova quando risk_decision.approved é true |
 | LLMAgent | Simulação | Produz texto determinístico; não consulta um modelo LLM |
