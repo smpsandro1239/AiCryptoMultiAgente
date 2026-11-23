@@ -80,8 +80,20 @@ class PortfolioState:
         self._validate_non_negative(price, "price")
         if price == 0:
             raise ValueError("O preço tem de ser superior a zero.")
+        candidate_exposure = sum(
+            position.quantity
+            * (
+                float(price)
+                if current_symbol == symbol
+                else self.marks.get(current_symbol, position.average_entry_price)
+            )
+            for current_symbol, position in self.positions.items()
+        )
+        candidate_equity = self.cash + candidate_exposure
+        if not isfinite(candidate_exposure) or not isfinite(candidate_equity):
+            raise ValueError("A marcação produziria exposição ou equity não finita.")
         self.marks[symbol] = float(price)
-        self._update_peak_equity()
+        self.peak_equity = max(self.peak_equity, candidate_equity)
 
     def apply_fill(
         self,
