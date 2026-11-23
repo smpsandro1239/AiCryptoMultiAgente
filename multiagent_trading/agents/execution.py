@@ -13,7 +13,9 @@ class ExecutionAgent(BaseAgent):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.risk_engine = RiskEngine()
+        if self.context.risk_engine is None:
+            self.context.risk_engine = RiskEngine()
+        self.risk_engine = self.context.risk_engine
         self._processed_order_ids: set[str] = set()
         self.event_bus.subscribe("trade_approved", self.on_trade_approved)
 
