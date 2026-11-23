@@ -202,3 +202,12 @@ def test_portfolio_high_water_mark_never_moves_down():
     portfolio.mark_price("BTC/USDT", 90)
     assert portfolio.peak_equity == pytest.approx(1_040)
     assert portfolio.snapshot()["drawdown_fraction"] == pytest.approx(60 / 1_040)
+
+
+def test_mark_price_rejects_overflow_without_changing_previous_mark():
+    portfolio = PortfolioState(initial_value=1e308)
+    portfolio.apply_fill("BTC/USDT", "BUY", 1e308, 1)
+    before = portfolio.snapshot()
+    with pytest.raises(ValueError, match="exposição ou equity"):
+        portfolio.mark_price("BTC/USDT", 1e308)
+    assert portfolio.snapshot() == before
