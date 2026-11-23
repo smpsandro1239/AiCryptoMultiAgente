@@ -60,7 +60,7 @@ class ExecutionAgent(BaseAgent):
                 decision.side,
                 decision.quantity,
                 float(opportunity["entry_price"]),
-                fee_rate=float(self.config.get("fee_rate", 0.001)),
+                fee_rate=self.risk_engine.limits.estimated_fee_rate,
             )
         except (KeyError, TypeError, ValueError) as error:
             await self.event_bus.publish("trade_rejected", {
