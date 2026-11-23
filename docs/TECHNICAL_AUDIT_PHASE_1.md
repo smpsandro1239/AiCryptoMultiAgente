@@ -55,4 +55,4 @@ A estrutura multiagente é uma base de exploração válida, mas o comportamento
 
 ## Conclusão
 
-A fase 1 melhora a fiabilidade do núcleo e a transparência documental. Não elimina as limitações de estratégia, risco e execução identificadas. A próxima fase deve começar pela validação de dados e pela remoção do fallback silencioso para dados sintéticos.
+A fase 1 melhora a fiabilidade do núcleo, valida os dados OHLCV de entrada e aumenta a transparência documental. Não elimina as limitações de estratégia, risco e execução identificadas. A próxima fase deve concentrar-se em contratos de eventos, contabilidade de ordens e um motor de simulação com custos realistas.
