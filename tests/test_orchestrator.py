@@ -1,6 +1,7 @@
 import asyncio
 
 from multiagent_trading.core.orchestrator import Backtester, Context, EventBus, Orchestrator
+from multiagent_trading.data.loader import load_ohlcv_csv
 from multiagent_trading.models.portfolio import PortfolioState
 
 
@@ -87,8 +88,6 @@ def test_backtester_records_portfolio_value_after_each_tick():
 
     asyncio.run(scenario())
 
-
-from multiagent_trading.data.loader import load_ohlcv_csv
 
 
 def test_csv_loader_rejects_missing_file_by_default(tmp_path):
