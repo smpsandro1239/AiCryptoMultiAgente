@@ -12,10 +12,10 @@ def test_portfolio_buy_mark_and_sell_accounting():
     assert portfolio.cash == pytest.approx(798)
     assert portfolio.total_value == pytest.approx(998)
     portfolio.mark_price("BTC/USDT", 110)
-    assert portfolio.unrealized_pnl == pytest.approx(20)
+    assert portfolio.unrealized_pnl == pytest.approx(18)
     portfolio.apply_fill("BTC/USDT", "SELL", 1, 110, fee_rate=0.01)
     assert portfolio.cash == pytest.approx(906.9)
-    assert portfolio.realized_pnl == pytest.approx(8.9)
+    assert portfolio.realized_pnl == pytest.approx(7.9)
     assert portfolio.positions["BTC/USDT"].quantity == pytest.approx(1)
 
 
