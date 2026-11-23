@@ -1,35 +1,34 @@
-import unittest
 import asyncio
-from multiagent_trading.core.orchestrator import EventBus, Context, Orchestrator
-from multiagent_trading.core.logger import Logger
+import unittest
+
 from multiagent_trading.agents.llm_agent import LLMAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
+from multiagent_trading.core.logger import Logger
+from multiagent_trading.core.orchestrator import Context, EventBus
+
 
 class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
     async def test_supervisor_llm_flow(self):
-        eb = EventBus()
+        event_bus = EventBus()
         logger = Logger(level="DEBUG")
-        ctx = Context()
+        context = Context()
 
-        supervisor = SupervisorAgent("Supervisor", {}, ctx, eb, logger)
-        llm = LLMAgent("LLM", {}, ctx, eb, logger)
+        SupervisorAgent("Supervisor", {}, context, event_bus, logger)
+        LLMAgent("LLM", {}, context, event_bus, logger)
 
-        # Test flag
         self.reasoning_done = False
 
-        async def on_trade_approved(opp):
+        async def on_trade_approved(opportunity):
             self.reasoning_done = True
-            self.assertIn("rationale", opp)
+            self.assertIn("rationale", opportunity)
 
-        eb.subscribe("trade_approved", on_trade_approved)
-
-        opp = {"symbol": "BTC/USDT", "side": "BUY"}
-        await eb.publish("risk_assessed", opp)
-
-        # Give some time for async tasks
+        event_bus.subscribe("trade_approved", on_trade_approved)
+        opportunity = {"symbol": "BTC/USDT", "side": "BUY"}
+        await event_bus.publish("risk_assessed", opportunity)
         await asyncio.sleep(0.1)
 
         self.assertTrue(self.reasoning_done)
+
 
 if __name__ == "__main__":
     unittest.main()

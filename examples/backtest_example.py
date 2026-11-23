@@ -1,27 +1,27 @@
 import asyncio
-import sys
-import os
+from pathlib import Path
 
-# Add the project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from multiagent_trading.core.orchestrator import Orchestrator, EventBus, Logger, Context, SemanticMemory, Backtester
-from multiagent_trading.agents.base import RegimeAgent, ScannerAgent, RiskAgent, SupervisorAgent, ExecutionAgent
-from multiagent_trading.models.portfolio import PortfolioState
+from multiagent_trading.agents.execution import ExecutionAgent
+from multiagent_trading.agents.regime import RegimeAgent
+from multiagent_trading.agents.risk import RiskAgent
+from multiagent_trading.agents.scanner import ScannerAgent
+from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.config.loader import load_config
+from multiagent_trading.core.logger import Logger
+from multiagent_trading.core.memory import PersistentSemanticMemory
+from multiagent_trading.core.orchestrator import Backtester, Context, EventBus, Orchestrator
 from multiagent_trading.data.loader import load_ohlcv_csv
+from multiagent_trading.models.portfolio import PortfolioState
 
-async def main():
-    config = load_config()
+
+async def main() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    config = load_config(project_root / "config.yaml")
     event_bus = EventBus()
     logger = Logger()
-
     context = Context(
-        timestamp=None,
-        regime=None,
         portfolio=PortfolioState(),
-        market_data=None,
-        memory=SemanticMemory()
+        memory=PersistentSemanticMemory(project_root / "memory.db"),
     )
 
     agents = {
@@ -31,15 +31,16 @@ async def main():
         "supervisor": SupervisorAgent("supervisor", config, context, event_bus, logger),
         "execution": ExecutionAgent("execution", config, context, event_bus, logger),
     }
-
     orchestrator = Orchestrator(agents, context, event_bus, logger)
 
-    data_feed = load_ohlcv_csv("BTCUSDT_1h.csv")
-    bt = Backtester(orchestrator, data_feed, context)
-    results = await bt.run()
+    data_path = project_root / "BTCUSDT_1h.csv"
+    data_feed = load_ohlcv_csv(data_path, allow_synthetic=True)
+    backtester = Backtester(orchestrator, data_feed, context)
+    results = await backtester.run()
 
-    print("Final PnL History:", results["pnl"])
-    print("Final Portfolio Value:", context.portfolio.total_value)
+    print("Portfolio value history (demonstration only):", results["pnl"])
+    print("Final portfolio value (not a financial backtest):", context.portfolio.total_value)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
