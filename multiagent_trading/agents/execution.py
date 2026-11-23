@@ -50,9 +50,14 @@ class ExecutionAgent(BaseAgent):
                 json.dumps(identity, sort_keys=True).encode("utf-8")
             ).hexdigest()
         order_payload = {
-            **opportunity,
             "order_id": order_id,
+            "symbol": decision.symbol,
+            "side": decision.side,
+            "entry_price": float(opportunity["entry_price"]),
+            "stop_price": float(opportunity["stop_price"]),
+            "quantity": decision.quantity,
             "risk_decision": decision.as_dict(),
+            "timestamp": str(self.context.timestamp),
         }
         if not self.order_store.reserve(order_id, order_payload):
             await self.event_bus.publish("trade_rejected", {
@@ -77,8 +82,7 @@ class ExecutionAgent(BaseAgent):
             return
 
         result = {
-            **opportunity,
-            "order_id": order_id,
+            **order_payload,
             "risk_decision": decision.as_dict(),
             "portfolio": portfolio.snapshot(),
             "execution_mode": "paper",
