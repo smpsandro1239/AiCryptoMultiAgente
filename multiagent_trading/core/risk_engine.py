@@ -16,6 +16,7 @@ class RiskLimits:
     max_portfolio_exposure_fraction: float = 0.80
     max_daily_loss_fraction: float = 0.05
     min_stop_distance_fraction: float = 0.001
+    estimated_fee_rate: float = 0.001
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,8 @@ class RiskEngine:
                 raise ValueError(f"{name} tem de estar em (0, 1].")
         if not 0 < self.limits.min_stop_distance_fraction < 1:
             raise ValueError("min_stop_distance_fraction tem de estar em (0, 1).")
+        if not 0 <= self.limits.estimated_fee_rate < 1:
+            raise ValueError("estimated_fee_rate tem de estar em [0, 1).")
 
     @staticmethod
     def _number(data: Mapping[str, Any], key: str) -> float:
@@ -157,7 +160,7 @@ class RiskEngine:
                 self.limits.max_order_notional,
                 position_capacity,
                 portfolio_capacity,
-                cash,
+                cash / (1 + self.limits.estimated_fee_rate),
             )
             quantity = min(quantity_by_risk, notional_cap / entry)
             notional = quantity * entry
