@@ -56,12 +56,14 @@ class Context:
         portfolio: Any = None,
         market_data: Any = None,
         memory: Any = None,
+        risk_engine: Any = None,
     ) -> None:
         self.timestamp = timestamp
         self.regime = regime
         self.portfolio = portfolio
         self.market_data = market_data
         self.memory = memory if memory is not None else PersistentSemanticMemory()
+        self.risk_engine = risk_engine
 
 
 class Orchestrator:
