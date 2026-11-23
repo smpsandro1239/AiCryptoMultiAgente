@@ -18,7 +18,7 @@ A estrutura multiagente é uma base de exploração válida, mas o comportamento
 | MATF-003 | Alta | `RegimeAgent` define sempre `BULL` | Decisões dependentes de regime enviesadas |
 | MATF-004 | Alta | `LLMAgent` constrói texto determinístico | Aparência de raciocínio IA sem inferência real |
 | MATF-005 | Alta | `Backtester` apenas regista `portfolio.total_value` | Ausência de fills, fees, slippage, funding e métricas |
-| MATF-006 | Média | `load_ohlcv_csv` devolve dados fictícios se o ficheiro não existir | Um backtest pode aparentar sucesso sem dados reais |
+| MATF-006 | Média | O carregador original devolvia dados fictícios se o ficheiro não existisse | Um backtest podia aparentar sucesso sem dados reais; corrigido nesta fase |
 | MATF-007 | Média | `EventBus` original assumia callbacks awaitable | Callbacks síncronos poderiam falhar em runtime |
 | MATF-008 | Média | Dependências declaradas de forma divergente entre `requirements.txt` e `pyproject.toml` | Instalações não reproduzíveis |
 
@@ -27,6 +27,8 @@ A estrutura multiagente é uma base de exploração válida, mas o comportamento
 - EventBus passou a aceitar callbacks síncronos e assíncronos.
 - Adicionado `unsubscribe`, com retorno booleano.
 - O dispatcher usa uma cópia dos subscritores durante cada publicação.
+- O carregador OHLCV deixa de substituir silenciosamente ficheiros em falta e valida colunas, valores finitos, preços e relações high/low.
+- O exemplo solicita explicitamente dados sintéticos e corrige imports que apontavam para símbolos inexistentes.
 - O contexto preserva objetos de memória explicitamente fornecidos, mesmo que sejam falsy.
 - Adicionados testes de unidade para publicação, remoção de subscritores, contexto e backtest.
 - Configurados pytest, Ruff e dependências opcionais de desenvolvimento.
@@ -35,7 +37,7 @@ A estrutura multiagente é uma base de exploração válida, mas o comportamento
 
 ## Limitações que permanecem abertas
 
-1. O carregador CSV ainda cria dados fictícios quando o ficheiro não existe. Deve ser alterado para falhar por omissão e só gerar dados sintéticos quando explicitamente solicitado.
+1. O carregador valida os candles, mas ainda falta normalizar fusos horários, ordenar timestamps e definir uma política explícita para gaps.
 2. Os agentes de regime, scanner, risco, supervisor, LLM e execução continuam a conter lógica demonstrativa.
 3. A memória SQLite não tem ainda política de retenção, migrações, controlo de concorrência ou validação de payloads.
 4. Não foi possível executar os testes no ambiente remoto desta auditoria. O CI foi preparado, mas o resultado só poderá ser confirmado após execução no GitHub Actions.
