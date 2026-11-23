@@ -105,7 +105,7 @@ class PortfolioState:
             current = position or Position()
             new_quantity = current.quantity + float(quantity)
             new_average = (
-                current.quantity * current.average_entry_price + notional
+                current.quantity * current.average_entry_price + notional + fee
             ) / new_quantity
             self.positions[symbol] = Position(new_quantity, new_average)
             self.cash -= notional + fee
