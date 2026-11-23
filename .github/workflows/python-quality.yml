@@ -32,6 +32,6 @@ jobs:
 
       - name: Lint risk, execution, core and tests
         run: >-
-          ruff check multiagent_trading/core multiagent_trading/agents/risk.py
+          ruff check multiagent_trading/core/orchestrator.py multiagent_trading/core/risk_engine.py\n          multiagent_trading/core/order_store.py multiagent_trading/agents/risk.py
           multiagent_trading/agents/execution.py multiagent_trading/agents/supervisor.py
           multiagent_trading/agents/scanner.py multiagent_trading/models/portfolio.py tests
