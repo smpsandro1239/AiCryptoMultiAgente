@@ -1,35 +1,47 @@
 # Fase 2 — Risk Engine e Portfolio Manager
 
-## Âmbito
+## Implementação
 
-Esta fase introduz contabilidade determinística de portefólio e uma barreira independente de pré-negociação. Os componentes são locais e destinam-se exclusivamente a simulação/paper trading. Não existe submissão de ordens a exchanges.
+Esta fase introduz contabilidade determinística de portefólio e uma barreira independente de pré-negociação. Tudo é local e exclusivamente destinado a paper trading; não existe submissão de ordens a exchanges.
 
-## Risk Engine
+### Risk Engine
 
-O RiskEngine recebe uma intenção com symbol, side, entry_price e stop_price e o estado do portefólio. Ignora deliberadamente qualquer campo risk_ok fornecido por agentes. A decisão RiskDecision contém quantidade, notional, risco estimado e motivos de rejeição.
+O RiskEngine recebe uma intenção com symbol, side, entry_price e stop_price e o estado do portefólio. Ignora qualquer campo risk_ok fornecido por agentes. A decisão RiskDecision contém aprovação, quantidade, notional, risco estimado e motivos de rejeição.
 
-Limites configuráveis: risco máximo por trade, notional máximo por ordem, fração máxima por posição, exposição agregada máxima, perda diária máxima e distância mínima ao stop. Dados inválidos ou estado inconsistente resultam em rejeição (fail closed).
+Limites configuráveis: risco máximo por trade, notional máximo por ordem, fração máxima por posição, exposição agregada máxima, perda diária máxima e distância mínima ao stop. Dados inválidos, stop ausente ou estado inconsistente resultam em rejeição (fail closed).
 
-O sizing é baseado na distância ao stop e limitado pelo saldo disponível e limites de exposição. Ainda não considera volatilidade, correlação, liquidez, concentração por ativo correlacionado, funding, slippage ou risco de execução.
+O sizing é baseado na distância ao stop e limitado pelo saldo e limites de exposição. Ainda não considera volatilidade, correlação, liquidez, funding, slippage ou risco de execução.
 
-## Portfolio Manager / PortfolioState
+### Pipeline de agentes
 
-PortfolioState mantém cash, posições spot líquidas, preço de marcação, preço médio ponderado, PnL realizado/não realizado e comissões. apply_fill() representa um fill simulado e valida saldo, quantidade, preço, comissão e inventário antes de alterar o estado.
+O fluxo está ligado nesta branch:
+1. RiskAgent recebe opportunity_found e calcula uma decisão independente.
+2. Apenas decisões explicitamente aprovadas publicam risk_assessed.
+3. SupervisorAgent exige risk_decision.approved == true antes de solicitar raciocínio.
+4. SupervisorAgent volta a verificar a decisão antes de publicar trade_approved.
+5. ExecutionAgent recalcula o risco imediatamente antes do fill e rejeita duplicados na sessão.
+6. Só depois aplica um fill simulado e publica paper_fill.
 
-Não há persistência transacional, reconciliação com exchange, ordens parciais, shorting, margem, derivados, empréstimos ou funding.
+A ausência de entry_price, stop_price ou PortfolioState válido bloqueia a operação. O campo risk_ok enviado pela estratégia não concede autorização.
 
-## Limites de segurança
+### Portfolio Manager
 
-- Nenhum agente deve converter uma recomendação diretamente numa ordem.
-- A decisão de risco deve ser recalculada na fronteira de execução, com dados atuais.
-- O RiskEngine não executa ordens; apenas calcula uma decisão.
-- O código desta fase não liga a exchanges nem ativa trading real.
-- Os testes validam regras contabilísticas e limites, não rentabilidade de estratégias.
+PortfolioState mantém cash, posições spot líquidas, preço médio ponderado, marcação a mercado, PnL realizado/não realizado e comissões. apply_fill() valida saldo, inventário, quantidade, preço e comissão antes de modificar o estado. Os fills são simulados; não são ordens de exchange.
+
+### Limitações conhecidas
+
+- Idempotência de ordens é atualmente mantida em memória pelo ExecutionAgent; não sobrevive a reinícios.
+- O estado do portefólio ainda não tem persistência transacional nem reconciliação externa.
+- Não existem ordens parciais, shorting, margem, derivados, empréstimos ou funding.
+- O controlo diário usa daily_pnl fornecido pelo contexto; falta construir a equity curve e o circuito de drawdown.
+- O RiskEngine de execução usa limites predefinidos; falta centralizar e injetar uma configuração única e imutável.
+- O scanner demonstrativo não fornece preços/stop por si; oportunidades sem esses dados são corretamente rejeitadas.
+- Não há integração de trading real nem deve ser adicionada antes de auditoria independente.
 
 ## Próximos passos
 
-1. Ligar o pipeline de agentes a um serviço de aprovação de risco sem confiar em risk_ok.
-2. Introduzir Order/Fill imutáveis, idempotência e estados de ordem.
-3. Adicionar drawdown por equity curve e limites por sessão.
-4. Modelar comissões, slippage e funding no backtester.
-5. Adicionar property-based tests e testes de concorrência.
+1. Centralizar configuração de risco e adicionar circuit breaker por drawdown.
+2. Introduzir Order/Fill imutáveis, estados de ordem e idempotência persistente.
+3. Modelar comissões, slippage e funding no backtester.
+4. Adicionar testes de propriedades, concorrência e recuperação após reinício.
+5. Validar todos os agentes e exemplos com CI antes de remover o estado Draft da PR.
