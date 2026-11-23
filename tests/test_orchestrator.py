@@ -86,3 +86,36 @@ def test_backtester_records_portfolio_value_after_each_tick():
         assert results == {"pnl": [1_025, 1_050]}
 
     asyncio.run(scenario())
+
+
+from multiagent_trading.data.loader import load_ohlcv_csv
+
+
+def test_csv_loader_rejects_missing_file_by_default(tmp_path):
+    missing_path = tmp_path / "missing.csv"
+    try:
+        load_ohlcv_csv(missing_path)
+    except FileNotFoundError as error:
+        assert "missing.csv" in str(error)
+    else:
+        raise AssertionError("Missing data must not be replaced silently")
+
+
+def test_csv_loader_allows_synthetic_data_only_when_requested(tmp_path):
+    candles = load_ohlcv_csv(tmp_path / "missing.csv", allow_synthetic=True)
+    assert len(candles) == 3
+    assert set(candles[0]) == {"timestamp", "open", "high", "low", "close", "volume"}
+
+
+def test_csv_loader_validates_ohlcv_relationships(tmp_path):
+    csv_path = tmp_path / "invalid.csv"
+    csv_path.write_text(
+        "timestamp,open,high,low,close,volume\n1,100,99,98,100,10\n",
+        encoding="utf-8",
+    )
+    try:
+        load_ohlcv_csv(csv_path)
+    except ValueError as error:
+        assert "high" in str(error).lower()
+    else:
+        raise AssertionError("Invalid OHLC relationships must be rejected")
