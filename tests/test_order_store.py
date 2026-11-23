@@ -1,3 +1,5 @@
+import pytest
+
 from multiagent_trading.core.order_store import OrderStore
 
 
@@ -31,10 +33,6 @@ def test_order_store_keeps_stale_pending_claims_fail_closed(tmp_path):
 def test_order_store_rejects_invalid_status():
     store = OrderStore()
     assert store.reserve("order-2", {})
-    try:
+    with pytest.raises(ValueError, match="Estado final"):
         store.set_status("order-2", "cancelled")
-    except ValueError as error:
-        assert "Estado final" in str(error)
-    else:
-        raise AssertionError("Estado inválido deveria ser rejeitado.")
     store.close()
