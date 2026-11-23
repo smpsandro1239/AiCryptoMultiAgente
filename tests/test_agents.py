@@ -6,6 +6,7 @@ from multiagent_trading.agents.risk import RiskAgent
 from multiagent_trading.agents.scanner import ScannerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.core.logger import Logger
+from multiagent_trading.core.risk_engine import RiskEngine, RiskLimits
 from multiagent_trading.core.orchestrator import Context, EventBus
 
 
@@ -21,7 +22,8 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.event_bus = EventBus()
         self.logger = Logger(level="DEBUG")
-        self.context = Context(memory=InMemoryStore())
+        shared_engine = RiskEngine(RiskLimits(max_order_notional=250))
+        self.context = Context(memory=InMemoryStore(), risk_engine=shared_engine)
         self.risk = RiskAgent(
             "Risk", {"initial_capital": 10_000}, self.context, self.event_bus, self.logger
         )
@@ -50,7 +52,10 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.fills), 1)
         self.assertEqual(self.fills[0]["execution_mode"], "paper")
         self.assertEqual(self.fills[0]["order_status"], "filled")
-        self.assertGreater(self.context.portfolio.positions["BTC/USDT"].quantity, 0)
+        self.assertEqual(
+            self.context.portfolio.positions["BTC/USDT"].quantity,
+            2.5,
+        )
         self.assertEqual(len(self.context.memory.items), 1)
         self.assertTrue(opportunity["risk_decision"]["approved"])
 
