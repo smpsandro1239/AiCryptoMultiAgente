@@ -25,7 +25,7 @@ Framework experimental de trading multiagente, orientado a eventos e desenvolvid
 | PortfolioState | Implementado para simulação | Posições spot, preço médio incluindo taxas, cash, PnL, comissões e high-water mark; sem persistência transacional |
 | SupervisorAgent | Protegido por decisão explícita | Só inicia raciocínio e aprova quando risk_decision.approved é true |
 | LLMAgent | Simulação | Produz texto determinístico; não consulta um modelo LLM |
-| ExecutionAgent | Paper-only | Revalida risco, bloqueia duplicados durante a sessão e aplica fills simulados; sem exchange |
+| ExecutionAgent | Paper-only | Revalida risco, usa ledger SQLite opcional para idempotência e aplica fills simulados; sem exchange |
 | Backtester | Básico | Regista valor do portefólio; ainda não modela fills históricos, slippage, funding ou latência |
 
 As funcionalidades descritas como primeira implementação não representam certificação, validação de rentabilidade ou prontidão para produção. Consultar docs/PHASE_2_RISK_PORTFOLIO.md e docs/TECHNICAL_AUDIT_PHASE_1.md.
@@ -122,7 +122,8 @@ O exemplo atual demonstra o fluxo de eventos e não constitui um backtest financ
 - [x] Exigir aprovação de risco no fluxo de agentes e revalidar antes do fill.
 - [x] Implementar circuit breaker por perda diária e drawdown com high-water mark em memória.
 - [ ] Persistir equity curve/high-water mark e definir limites diários a partir do equity de início do dia.
-- [ ] Persistir ordens, fills e chaves de idempotência.
+- [x] Adicionar ledger SQLite de ordens com IDs únicos e bloqueio fail-closed de ordens pendentes após reinício.
+- [ ] Persistir portefólio e reconciliar ordens pending após crash.
 - [ ] Modelar comissões, slippage, funding e latência no backtester.
 - [ ] Normalizar fusos horários, ordenação temporal e gaps.
 - [ ] Implementar classificação quantitativa de regime e scanner real.
