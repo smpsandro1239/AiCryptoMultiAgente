@@ -9,7 +9,9 @@ class RiskAgent(BaseAgent):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.risk_engine = RiskEngine()
+        if self.context.risk_engine is None:
+            self.context.risk_engine = RiskEngine()
+        self.risk_engine = self.context.risk_engine
         if self.context.portfolio is None:
             capital = float(self.config.get("initial_capital", 10_000.0))
             self.context.portfolio = PortfolioState(initial_value=capital)
