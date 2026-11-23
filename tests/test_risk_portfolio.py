@@ -169,3 +169,36 @@ def test_portfolio_rejects_overflowing_buy_without_mutation():
     with pytest.raises(ValueError, match="finitos"):
         portfolio.apply_fill("BTC/USDT", "BUY", 1e308, 2)
     assert portfolio.snapshot() == before
+
+
+def test_drawdown_circuit_breaker_blocks_new_entries_but_allows_exits():
+    portfolio = PortfolioState(initial_value=1_000)
+    portfolio.apply_fill("BTC/USDT", "BUY", 5, 100)
+    portfolio.mark_price("BTC/USDT", 80)
+    engine = RiskEngine(RiskLimits(max_drawdown_fraction=0.05))
+
+    blocked_entry = engine.assess(
+        {"symbol": "ETH/USDT", "side": "BUY", "entry_price": 80, "stop_price": 72},
+        portfolio,
+    )
+    allowed_exit = engine.assess(
+        {"symbol": "BTC/USDT", "side": "SELL", "entry_price": 80, "stop_price": 72},
+        portfolio,
+        daily_pnl=-100,
+    )
+
+    assert portfolio.snapshot()["drawdown_fraction"] == pytest.approx(0.1)
+    assert not blocked_entry.approved
+    assert "drawdown" in blocked_entry.reasons[0].lower()
+    assert allowed_exit.approved
+    assert allowed_exit.quantity == pytest.approx(5)
+
+
+def test_portfolio_high_water_mark_never_moves_down():
+    portfolio = PortfolioState(initial_value=1_000)
+    portfolio.apply_fill("BTC/USDT", "BUY", 2, 100)
+    portfolio.mark_price("BTC/USDT", 120)
+    assert portfolio.peak_equity == pytest.approx(1_040)
+    portfolio.mark_price("BTC/USDT", 90)
+    assert portfolio.peak_equity == pytest.approx(1_040)
+    assert portfolio.snapshot()["drawdown_fraction"] == pytest.approx(60 / 1_040)
