@@ -125,3 +125,47 @@ def test_risk_engine_rejects_sell_quantity_above_inventory():
         portfolio,
     )
     assert not decision.approved
+
+
+def test_risk_sizing_reserves_cash_for_the_same_fee_used_by_execution():
+    portfolio = PortfolioState(initial_value=100)
+    engine = RiskEngine(
+        RiskLimits(
+            risk_per_trade=1,
+            max_order_notional=1_000,
+            max_position_fraction=1,
+            max_portfolio_exposure_fraction=1,
+            estimated_fee_rate=0.01,
+        )
+    )
+    decision = engine.assess(
+        {"symbol": "BTC/USDT", "side": "BUY", "entry_price": 100, "stop_price": 90},
+        portfolio,
+    )
+    assert decision.approved
+    portfolio.apply_fill(
+        decision.symbol,
+        decision.side,
+        decision.quantity,
+        100,
+        fee_rate=engine.limits.estimated_fee_rate,
+    )
+    assert portfolio.cash >= 0
+    assert portfolio.cash == pytest.approx(0)
+
+
+def test_portfolio_rejects_overflowing_sell_without_mutation():
+    portfolio = PortfolioState(initial_value=1e308)
+    portfolio.apply_fill("BTC/USDT", "BUY", 1e308, 1)
+    before = portfolio.snapshot()
+    with pytest.raises(ValueError, match="finitos"):
+        portfolio.apply_fill("BTC/USDT", "SELL", 1e308, 1e308)
+    assert portfolio.snapshot() == before
+
+
+def test_portfolio_rejects_overflowing_buy_without_mutation():
+    portfolio = PortfolioState(initial_value=1e308)
+    before = portfolio.snapshot()
+    with pytest.raises(ValueError, match="finitos"):
+        portfolio.apply_fill("BTC/USDT", "BUY", 1e308, 2)
+    assert portfolio.snapshot() == before
