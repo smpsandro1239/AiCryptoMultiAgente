@@ -20,17 +20,17 @@ O fluxo está ligado nesta branch:
 3. SupervisorAgent exige risk_decision.approved == true antes de solicitar raciocínio.
 4. SupervisorAgent volta a verificar a decisão antes de publicar trade_approved.
 5. ExecutionAgent recalcula o risco imediatamente antes do fill e rejeita duplicados na sessão.
-6. Só depois aplica um fill simulado e publica paper_fill.
+6. Só depois aplica um fill simulado, persiste o estado final da ordem e publica paper_fill.
 
 A ausência de entry_price, stop_price ou PortfolioState válido bloqueia a operação. O campo risk_ok enviado pela estratégia não concede autorização.
 
 ### Portfolio Manager
 
-PortfolioState mantém cash, posições spot líquidas, preço médio ponderado incluindo comissão de entrada, marcação a mercado, PnL realizado/não realizado, comissões e high-water mark. apply_fill() valida saldo, inventário, quantidade, preço, comissão e resultados numéricos finitos antes de modificar o estado. Os fills são simulados; não são ordens de exchange.
+OrderStore mantém um ledger SQLite com identificador único e estados pending/filled/rejected. O caminho é configurável por order_db_path; por omissão usa SQLite em memória para não criar ficheiros inesperados em testes. Uma ordem deixada em pending por uma interrupção não é repetida automaticamente (fail closed).\n\nPortfolioState mantém cash, posições spot líquidas, preço médio ponderado incluindo comissão de entrada, marcação a mercado, PnL realizado/não realizado, comissões e high-water mark. apply_fill() valida saldo, inventário, quantidade, preço, comissão e resultados numéricos finitos antes de modificar o estado. Os fills são simulados; não são ordens de exchange.
 
 ### Limitações conhecidas
 
-- Idempotência de ordens é atualmente mantida em memória pelo ExecutionAgent; não sobrevive a reinícios.
+- O ledger de ordens suporta persistência SQLite quando order_db_path aponta para um ficheiro, mas o portefólio continua em memória; não existe ainda transação atómica entre ledger e contabilidade. Ordens pending após crash ficam bloqueadas para reconciliação manual.
 - O estado do portefólio ainda não tem persistência transacional nem reconciliação externa.
 - Não existem ordens parciais, shorting, margem, derivados, empréstimos ou funding.
 - O controlo diário usa daily_pnl fornecido pelo contexto; o high-water mark e o circuito de drawdown são mantidos apenas em memória e ainda não têm equity curve persistente.
@@ -41,7 +41,7 @@ PortfolioState mantém cash, posições spot líquidas, preço médio ponderado 
 ## Próximos passos
 
 1. Persistir high-water mark/equity curve e definir limites diários a partir do equity de início do dia.
-2. Introduzir Order/Fill imutáveis, estados de ordem e idempotência persistente.
+2. Persistir o estado do portefólio e implementar reconciliação de ordens pending após crash.
 3. Modelar comissões, slippage e funding no backtester.
 4. Adicionar testes de propriedades, concorrência e recuperação após reinício.
 5. Validar todos os agentes e exemplos com CI antes de remover o estado Draft da PR.
