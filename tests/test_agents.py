@@ -22,8 +22,12 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         self.event_bus = EventBus()
         self.logger = Logger(level="DEBUG")
         self.context = Context(memory=InMemoryStore())
-        self.risk = RiskAgent("Risk", {"initial_capital": 10_000}, self.context, self.event_bus, self.logger)
-        self.supervisor = SupervisorAgent("Supervisor", {}, self.context, self.event_bus, self.logger)
+        self.risk = RiskAgent(
+            "Risk", {"initial_capital": 10_000}, self.context, self.event_bus, self.logger
+        )
+        self.supervisor = SupervisorAgent(
+            "Supervisor", {}, self.context, self.event_bus, self.logger
+        )
         self.llm = LLMAgent("LLM", {}, self.context, self.event_bus, self.logger)
         self.execution = ExecutionAgent("Execution", {}, self.context, self.event_bus, self.logger)
         self.scanner = ScannerAgent("Scanner", {}, self.context, self.event_bus, self.logger)
@@ -50,9 +54,10 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(opportunity["risk_decision"]["approved"])
 
     async def test_scanner_forwards_real_market_prices_into_risk_gate(self):
-        await self.event_bus.publish("market_update", {
-            "symbol": "ETH/USDT", "close": 50.0, "stop_price": 45.0,
-        })
+        await self.event_bus.publish(
+            "market_update",
+            {"symbol": "ETH/USDT", "close": 50.0, "stop_price": 45.0},
+        )
         self.assertEqual(len(self.fills), 1)
         self.assertEqual(self.fills[0]["symbol"], "ETH/USDT")
 
@@ -77,7 +82,10 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         await self.event_bus.publish("opportunity_found", opportunity)
 
         self.assertEqual(len(self.fills), 1)
-        self.assertTrue(any("Duplicate" in item.get("rejection_reason", "") for item in self.rejections))
+        duplicate_rejected = any(
+            "Duplicate" in item.get("rejection_reason", "") for item in self.rejections
+        )
+        self.assertTrue(duplicate_rejected)
 
 
 if __name__ == "__main__":
