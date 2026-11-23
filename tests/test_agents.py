@@ -3,6 +3,7 @@ import unittest
 from multiagent_trading.agents.execution import ExecutionAgent
 from multiagent_trading.agents.llm_agent import LLMAgent
 from multiagent_trading.agents.risk import RiskAgent
+from multiagent_trading.agents.scanner import ScannerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.core.logger import Logger
 from multiagent_trading.core.orchestrator import Context, EventBus
@@ -25,6 +26,7 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         self.supervisor = SupervisorAgent("Supervisor", {}, self.context, self.event_bus, self.logger)
         self.llm = LLMAgent("LLM", {}, self.context, self.event_bus, self.logger)
         self.execution = ExecutionAgent("Execution", {}, self.context, self.event_bus, self.logger)
+        self.scanner = ScannerAgent("Scanner", {}, self.context, self.event_bus, self.logger)
         self.fills = []
         self.rejections = []
         self.event_bus.subscribe("paper_fill", self.fills.append)
@@ -46,6 +48,13 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
         self.assertGreater(self.context.portfolio.positions["BTC/USDT"].quantity, 0)
         self.assertEqual(len(self.context.memory.items), 1)
         self.assertTrue(opportunity["risk_decision"]["approved"])
+
+    async def test_scanner_forwards_real_market_prices_into_risk_gate(self):
+        await self.event_bus.publish("market_update", {
+            "symbol": "ETH/USDT", "close": 50.0, "stop_price": 45.0,
+        })
+        self.assertEqual(len(self.fills), 1)
+        self.assertEqual(self.fills[0]["symbol"], "ETH/USDT")
 
     async def test_missing_stop_is_rejected_and_never_executed(self):
         opportunity = {"symbol": "BTC/USDT", "side": "BUY", "entry_price": 100.0}
