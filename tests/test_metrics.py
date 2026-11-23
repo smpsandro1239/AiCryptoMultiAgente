@@ -1,6 +1,7 @@
 import unittest
-import numpy as np
-from multiagent_trading.analytics.metrics import calculate_sharpe_ratio, calculate_max_drawdown
+
+from multiagent_trading.analytics.metrics import calculate_max_drawdown, calculate_sharpe_ratio
+
 
 class TestMetrics(unittest.TestCase):
     def test_sharpe_ratio(self):
@@ -12,7 +13,8 @@ class TestMetrics(unittest.TestCase):
         values = [100, 110, 105, 115, 90, 95]
         mdd = calculate_max_drawdown(values)
         self.assertLess(mdd, 0)
-        self.assertAlmostEqual(mdd, (90-115)/115)
+        self.assertAlmostEqual(mdd, (90 - 115) / 115)
+
 
 if __name__ == "__main__":
     unittest.main()

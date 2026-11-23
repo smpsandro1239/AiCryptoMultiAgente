@@ -27,7 +27,7 @@ def load_ohlcv_csv(filename: str | Path, *, allow_synthetic: bool = False) -> li
     frame = pd.read_csv(path)
     missing = [column for column in REQUIRED_COLUMNS if column not in frame.columns]
     if missing:
-        raise ValueError(f"OHLCV CSV is missing required columns: {", ".join(missing)}")
+        raise ValueError(f"OHLCV CSV is missing required columns: {', '.join(missing)}")
     if frame.empty:
         raise ValueError("OHLCV CSV contains no candles")
     if frame["timestamp"].isna().any():

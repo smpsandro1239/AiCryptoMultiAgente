@@ -1,33 +1,97 @@
-import asyncio
 import unittest
 
+from multiagent_trading.agents.execution import ExecutionAgent
 from multiagent_trading.agents.llm_agent import LLMAgent
+from multiagent_trading.agents.risk import RiskAgent
+from multiagent_trading.agents.scanner import ScannerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.core.logger import Logger
+from multiagent_trading.core.risk_engine import RiskEngine, RiskLimits
 from multiagent_trading.core.orchestrator import Context, EventBus
 
 
+class InMemoryStore:
+    def __init__(self):
+        self.items = []
+
+    def add(self, key, value):
+        self.items.append((key, value))
+
+
 class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
-    async def test_supervisor_llm_flow(self):
-        event_bus = EventBus()
-        logger = Logger(level="DEBUG")
-        context = Context()
+    async def asyncSetUp(self):
+        self.event_bus = EventBus()
+        self.logger = Logger(level="DEBUG")
+        shared_engine = RiskEngine(RiskLimits(max_order_notional=250))
+        self.context = Context(memory=InMemoryStore(), risk_engine=shared_engine)
+        self.risk = RiskAgent(
+            "Risk", {"initial_capital": 10_000}, self.context, self.event_bus, self.logger
+        )
+        self.supervisor = SupervisorAgent(
+            "Supervisor", {}, self.context, self.event_bus, self.logger
+        )
+        self.llm = LLMAgent("LLM", {}, self.context, self.event_bus, self.logger)
+        self.execution = ExecutionAgent("Execution", {}, self.context, self.event_bus, self.logger)
+        self.scanner = ScannerAgent("Scanner", {}, self.context, self.event_bus, self.logger)
+        self.fills = []
+        self.rejections = []
+        self.event_bus.subscribe("paper_fill", self.fills.append)
+        self.assertIs(self.risk.risk_engine, self.execution.risk_engine)
+        self.event_bus.subscribe("trade_rejected", self.rejections.append)
 
-        SupervisorAgent("Supervisor", {}, context, event_bus, logger)
-        LLMAgent("LLM", {}, context, event_bus, logger)
+    async def test_only_risk_approved_opportunity_reaches_paper_execution(self):
+        opportunity = {
+            "symbol": "BTC/USDT",
+            "side": "BUY",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "risk_ok": False,
+        }
+        await self.event_bus.publish("opportunity_found", opportunity)
 
-        self.reasoning_done = False
+        self.assertEqual(len(self.fills), 1)
+        self.assertEqual(self.fills[0]["execution_mode"], "paper")
+        self.assertEqual(self.fills[0]["order_status"], "filled")
+        self.assertEqual(
+            self.context.portfolio.positions["BTC/USDT"].quantity,
+            2.5,
+        )
+        self.assertEqual(len(self.context.memory.items), 1)
+        self.assertTrue(opportunity["risk_decision"]["approved"])
 
-        async def on_trade_approved(opportunity):
-            self.reasoning_done = True
-            self.assertIn("rationale", opportunity)
+    async def test_scanner_forwards_real_market_prices_into_risk_gate(self):
+        await self.event_bus.publish(
+            "market_update",
+            {"symbol": "ETH/USDT", "close": 50.0, "stop_price": 45.0},
+        )
+        self.assertEqual(len(self.fills), 1)
+        self.assertEqual(self.fills[0]["symbol"], "ETH/USDT")
 
-        event_bus.subscribe("trade_approved", on_trade_approved)
-        opportunity = {"symbol": "BTC/USDT", "side": "BUY"}
-        await event_bus.publish("risk_assessed", opportunity)
-        await asyncio.sleep(0.1)
+    async def test_missing_stop_is_rejected_and_never_executed(self):
+        opportunity = {"symbol": "BTC/USDT", "side": "BUY", "entry_price": 100.0}
+        await self.event_bus.publish("opportunity_found", opportunity)
 
-        self.assertTrue(self.reasoning_done)
+        self.assertEqual(self.fills, [])
+        self.assertEqual(len(self.rejections), 1)
+        self.assertFalse(opportunity["risk_decision"]["approved"])
+        self.assertEqual(self.context.portfolio.positions, {})
+
+    async def test_duplicate_order_identifier_is_rejected(self):
+        opportunity = {
+            "order_id": "order-unique-1",
+            "symbol": "BTC/USDT",
+            "side": "BUY",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+        }
+        await self.event_bus.publish("opportunity_found", opportunity)
+        await self.event_bus.publish("opportunity_found", opportunity)
+
+        self.assertEqual(len(self.fills), 1)
+        duplicate_rejected = any(
+            "Duplicate" in item.get("rejection_reason", "") for item in self.rejections
+        )
+        self.assertTrue(duplicate_rejected)
 
 
 if __name__ == "__main__":

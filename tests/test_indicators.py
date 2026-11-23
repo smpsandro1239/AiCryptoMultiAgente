@@ -1,7 +1,8 @@
 import unittest
-import numpy as np
+
 from multiagent_trading.indicators.ema import calculate_ema
 from multiagent_trading.indicators.rsi import calculate_rsi
+
 
 class TestIndicators(unittest.TestCase):
     def test_ema(self):
@@ -15,6 +16,7 @@ class TestIndicators(unittest.TestCase):
         rsi = calculate_rsi(prices, period=5)
         self.assertIsNotNone(rsi)
         self.assertEqual(len(rsi), len(prices))
+
 
 if __name__ == "__main__":
     unittest.main()
