@@ -31,4 +31,4 @@ jobs:
         run: pytest
 
       - name: Lint core and tests
-        run: ruff check multiagent_trading/core/orchestrator.py tests
+        run: >-\n          ruff check multiagent_trading/core multiagent_trading/agents/risk.py\n          multiagent_trading/agents/execution.py multiagent_trading/agents/supervisor.py\n          multiagent_trading/agents/scanner.py multiagent_trading/models/portfolio.py tests
