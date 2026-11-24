@@ -1,9 +1,10 @@
 """Independent, fail-closed pre-trade risk checks for spot paper trading."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from math import isfinite
-from typing import Any, Mapping
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -16,6 +17,8 @@ class RiskLimits:
     max_portfolio_exposure_fraction: float = 0.80
     max_daily_loss_fraction: float = 0.05
     min_stop_distance_fraction: float = 0.001
+    estimated_fee_rate: float = 0.001
+    max_drawdown_fraction: float = 0.15
 
 
 @dataclass(frozen=True)
@@ -61,11 +64,14 @@ class RiskEngine:
             "max_position_fraction",
             "max_portfolio_exposure_fraction",
             "max_daily_loss_fraction",
+            "max_drawdown_fraction",
         ):
             if not 0 < getattr(self.limits, name) <= 1:
                 raise ValueError(f"{name} tem de estar em (0, 1].")
         if not 0 < self.limits.min_stop_distance_fraction < 1:
             raise ValueError("min_stop_distance_fraction tem de estar em (0, 1).")
+        if not 0 <= self.limits.estimated_fee_rate < 1:
+            raise ValueError("estimated_fee_rate tem de estar em [0, 1).")
 
     @staticmethod
     def _number(data: Mapping[str, Any], key: str) -> float:
@@ -117,9 +123,6 @@ class RiskEngine:
             # intents therefore carry a protective stop below the entry price.
             if stop >= entry:
                 raise ValueError("O stop de uma posição spot longa tem de ficar abaixo da entrada.")
-            if daily <= -equity * self.limits.max_daily_loss_fraction:
-                raise ValueError("Limite de perda diária atingido.")
-
             if side == "SELL":
                 position = portfolio.positions.get(symbol)
                 available = float(position.quantity) if position else 0.0
@@ -136,6 +139,15 @@ class RiskEngine:
                 return RiskDecision(
                     True, symbol, side, requested, notional, requested * distance
                 )
+
+            if daily <= -equity * self.limits.max_daily_loss_fraction:
+                raise ValueError("Circuit breaker: limite de perda diária atingido.")
+            peak_equity = float(portfolio.peak_equity)
+            if not isfinite(peak_equity) or peak_equity < equity:
+                raise ValueError("High-water mark do portefólio inválido.")
+            drawdown = (peak_equity - equity) / peak_equity
+            if drawdown >= self.limits.max_drawdown_fraction:
+                raise ValueError("Circuit breaker: limite de drawdown máximo atingido.")
 
             risk_budget = equity * self.limits.risk_per_trade
             quantity_by_risk = risk_budget / distance
@@ -157,7 +169,7 @@ class RiskEngine:
                 self.limits.max_order_notional,
                 position_capacity,
                 portfolio_capacity,
-                cash,
+                cash / (1 + self.limits.estimated_fee_rate),
             )
             quantity = min(quantity_by_risk, notional_cap / entry)
             notional = quantity * entry

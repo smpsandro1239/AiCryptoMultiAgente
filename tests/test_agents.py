@@ -6,8 +6,8 @@ from multiagent_trading.agents.risk import RiskAgent
 from multiagent_trading.agents.scanner import ScannerAgent
 from multiagent_trading.agents.supervisor import SupervisorAgent
 from multiagent_trading.core.logger import Logger
-from multiagent_trading.core.risk_engine import RiskEngine, RiskLimits
 from multiagent_trading.core.orchestrator import Context, EventBus
+from multiagent_trading.core.risk_engine import RiskEngine, RiskLimits
 
 
 class InMemoryStore:
@@ -46,12 +46,15 @@ class TestAgentInteraction(unittest.IsolatedAsyncioTestCase):
             "entry_price": 100.0,
             "stop_price": 90.0,
             "risk_ok": False,
+            "api_key": "must-not-be-persisted",
         }
         await self.event_bus.publish("opportunity_found", opportunity)
 
         self.assertEqual(len(self.fills), 1)
         self.assertEqual(self.fills[0]["execution_mode"], "paper")
         self.assertEqual(self.fills[0]["order_status"], "filled")
+        self.assertNotIn("api_key", self.fills[0])
+        self.assertNotIn("risk_ok", self.fills[0])
         self.assertEqual(
             self.context.portfolio.positions["BTC/USDT"].quantity,
             2.5,

@@ -22,11 +22,19 @@ class PortfolioState:
     positions: dict[str, Position] = field(default_factory=dict)
     marks: dict[str, float] = field(default_factory=dict)
     fees_paid: float = 0.0
+    peak_equity: float = field(init=False)
     _realized_pnl: float = field(default=0.0, init=False, repr=False)
 
     def __post_init__(self) -> None:
         self._validate_non_negative(self.initial_value, "initial_value")
         self.cash = float(self.initial_value)
+        self.peak_equity = float(self.initial_value)
+
+    def _update_peak_equity(self) -> None:
+        equity = self.total_value
+        if not isfinite(equity):
+            raise ValueError("Equity do portefólio não finita.")
+        self.peak_equity = max(self.peak_equity, equity)
 
     @staticmethod
     def _validate_non_negative(value: float, name: str) -> None:
@@ -45,6 +53,7 @@ class PortfolioState:
         if self.positions:
             raise ValueError("Não é possível definir total_value com posições abertas.")
         self.cash = float(value)
+        self._update_peak_equity()
 
     @property
     def unrealized_pnl(self) -> float:
@@ -71,7 +80,20 @@ class PortfolioState:
         self._validate_non_negative(price, "price")
         if price == 0:
             raise ValueError("O preço tem de ser superior a zero.")
+        candidate_exposure = sum(
+            position.quantity
+            * (
+                float(price)
+                if current_symbol == symbol
+                else self.marks.get(current_symbol, position.average_entry_price)
+            )
+            for current_symbol, position in self.positions.items()
+        )
+        candidate_equity = self.cash + candidate_exposure
+        if not isfinite(candidate_exposure) or not isfinite(candidate_equity):
+            raise ValueError("A marcação produziria exposição ou equity não finita.")
         self.marks[symbol] = float(price)
+        self.peak_equity = max(self.peak_equity, candidate_equity)
 
     def apply_fill(
         self,
@@ -97,37 +119,55 @@ class PortfolioState:
 
         notional = float(quantity) * float(price)
         fee = notional * float(fee_rate)
+        new_fees_paid = self.fees_paid + fee
+        if not all(isfinite(value) for value in (notional, fee, new_fees_paid)):
+            raise ValueError("Notional e comissão têm de ser finitos.")
         position = self.positions.get(symbol)
 
         if side == "BUY":
-            if notional + fee > self.cash:
+            total_cost = notional + fee
+            new_cash = self.cash - total_cost
+            if total_cost > self.cash:
                 raise ValueError("Saldo insuficiente para o fill simulado.")
             current = position or Position()
             new_quantity = current.quantity + float(quantity)
             new_average = (
-                current.quantity * current.average_entry_price + notional + fee
+                current.quantity * current.average_entry_price + total_cost
             ) / new_quantity
+            if not all(isfinite(value) for value in (new_cash, new_quantity, new_average)):
+                raise ValueError("O fill produziria valores contabilísticos não finitos.")
             self.positions[symbol] = Position(new_quantity, new_average)
-            self.cash -= notional + fee
+            self.cash = new_cash
         else:
             if position is None or quantity > position.quantity:
                 raise ValueError("Não é permitido vender mais do que a posição disponível.")
             realized = float(quantity) * (float(price) - position.average_entry_price) - fee
-            self._realized_pnl += realized
+            new_realized_pnl = self._realized_pnl + realized
+            new_cash = self.cash + notional - fee
             remaining = position.quantity - float(quantity)
+            if not all(isfinite(value) for value in (realized, new_realized_pnl, new_cash)):
+                raise ValueError("O fill produziria valores contabilísticos não finitos.")
+            self._realized_pnl = new_realized_pnl
             if remaining == 0:
                 self.positions.pop(symbol)
             else:
                 self.positions[symbol] = Position(remaining, position.average_entry_price)
-            self.cash += notional - fee
+            self.cash = new_cash
 
-        self.fees_paid += fee
+        self.fees_paid = new_fees_paid
         self.marks[symbol] = float(price)
+        self._update_peak_equity()
 
     def snapshot(self) -> dict[str, object]:
         return {
             "cash": self.cash,
             "equity": self.total_value,
+            "peak_equity": self.peak_equity,
+            "drawdown_fraction": (
+                max(0.0, (self.peak_equity - self.total_value) / self.peak_equity)
+                if self.peak_equity > 0
+                else 0.0
+            ),
             "exposure": self.exposure,
             "realized_pnl": self.realized_pnl,
             "unrealized_pnl": self.unrealized_pnl,
