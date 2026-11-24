@@ -188,7 +188,9 @@ class PortfolioState:
         """Restore a portfolio from a validated snapshot without replaying fills."""
         if not isinstance(snapshot, dict):
             raise ValueError("Snapshot do portefólio inválido.")
-        required = {"initial_value", "cash", "peak_equity", "realized_pnl", "fees_paid", "positions"}
+        required = {
+            "initial_value", "cash", "peak_equity", "realized_pnl", "fees_paid", "positions"
+        }
         if not required.issubset(snapshot):
             raise ValueError("Snapshot do portefólio incompleto.")
         try:
@@ -199,10 +201,15 @@ class PortfolioState:
             fees_paid = float(snapshot["fees_paid"])
         except (TypeError, ValueError, OverflowError) as error:
             raise ValueError("Snapshot contém campos numéricos inválidos.") from error
-        if not all(isfinite(value) for value in (initial_value, cash, peak_equity, realized_pnl, fees_paid)):
+        if not all(
+            isfinite(value)
+            for value in (initial_value, cash, peak_equity, realized_pnl, fees_paid)
+        ):
             raise ValueError("Snapshot contém valores não finitos.")
         if min(initial_value, cash, peak_equity, fees_paid) < 0:
-            raise ValueError("Cash, capital inicial, high-water mark e comissões não podem ser negativos.")
+            raise ValueError(
+                "Cash, capital inicial, high-water mark e comissões não podem ser negativos."
+            )
         raw_positions = snapshot["positions"]
         if not isinstance(raw_positions, dict):
             raise ValueError("positions tem de ser um objeto.")
