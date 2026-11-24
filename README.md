@@ -22,13 +22,13 @@ Framework experimental de trading multiagente, orientado a eventos e desenvolvid
 | ScannerAgent | Protótipo | Emite oportunidade demonstrativa; não calcula sinal/stop completos |
 | RiskEngine | Primeira implementação | Sizing por distância ao stop, comissões estimadas, notional/exposição, perda diária e drawdown; ainda sem volatilidade, correlação ou liquidez |
 | RiskAgent | Integrado nesta fase | Partilha o RiskEngine injetado no Context; rejeita dados incompletos e ignora risk_ok |
-| PortfolioState | Implementado para simulação | Posições spot, preço médio incluindo taxas, cash, PnL, comissões e high-water mark; sem persistência transacional |
+| PortfolioState / PortfolioStore | Implementado para simulação | Posições spot, preço médio incluindo taxas, cash, PnL, comissões, high-water mark e snapshots SQLite versionados; persistência ainda explícita, sem transação comum com o ledger de ordens |
 | SupervisorAgent | Protegido por decisão explícita | Só inicia raciocínio e aprova quando risk_decision.approved é true |
 | LLMAgent | Simulação | Produz texto determinístico; não consulta um modelo LLM |
 | ExecutionAgent | Paper-only | Revalida risco, usa ledger SQLite opcional para idempotência e aplica fills simulados; sem exchange |
 | Backtester | Básico | Regista valor do portefólio; ainda não modela fills históricos, slippage, funding ou latência |
 
-As funcionalidades descritas como primeira implementação não representam certificação, validação de rentabilidade ou prontidão para produção. Consultar docs/PHASE_2_RISK_PORTFOLIO.md e docs/TECHNICAL_AUDIT_PHASE_1.md.
+As funcionalidades descritas como primeira implementação não representam certificação, validação de rentabilidade ou prontidão para produção. Consultar docs/PHASE_2_RISK_PORTFOLIO.md, docs/PHASE_3_PORTFOLIO_PERSISTENCE.md e docs/TECHNICAL_AUDIT_PHASE_1.md.
 
 ## Arquitetura de segurança
 
@@ -121,9 +121,9 @@ O exemplo atual demonstra o fluxo de eventos e não constitui um backtest financ
 - [x] Introduzir contabilidade de portefólio e fills simulados.
 - [x] Exigir aprovação de risco no fluxo de agentes e revalidar antes do fill.
 - [x] Implementar circuit breaker por perda diária e drawdown com high-water mark em memória.
-- [ ] Persistir equity curve/high-water mark e definir limites diários a partir do equity de início do dia.
+- [x] Persistir snapshots versionados do portefólio em SQLite e restaurar estado contabilístico validado.\n- [ ] Persistir equity curve completa e definir limites diários a partir do equity de início do dia.
 - [x] Adicionar ledger SQLite de ordens com IDs únicos e bloqueio fail-closed de ordens pendentes após reinício.
-- [ ] Persistir portefólio e reconciliar ordens pending após crash.
+- [ ] Integrar snapshots automaticamente no ciclo de execução e reconciliar ordens pending após crash, com consistência transacional entre ledger e portefólio.
 - [ ] Modelar comissões, slippage, funding e latência no backtester.
 - [ ] Normalizar fusos horários, ordenação temporal e gaps.
 - [ ] Implementar classificação quantitativa de regime e scanner real.
