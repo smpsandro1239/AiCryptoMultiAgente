@@ -160,6 +160,7 @@ class PortfolioState:
 
     def snapshot(self) -> dict[str, object]:
         return {
+            "initial_value": self.initial_value,
             "cash": self.cash,
             "equity": self.total_value,
             "peak_equity": self.peak_equity,
@@ -181,3 +182,52 @@ class PortfolioState:
                 for symbol, position in self.positions.items()
             },
         }
+
+    @classmethod
+    def from_snapshot(cls, snapshot: dict[str, object]) -> PortfolioState:
+        """Restore a portfolio from a validated snapshot without replaying fills."""
+        if not isinstance(snapshot, dict):
+            raise ValueError("Snapshot do portefólio inválido.")
+        required = {"initial_value", "cash", "peak_equity", "realized_pnl", "fees_paid", "positions"}
+        if not required.issubset(snapshot):
+            raise ValueError("Snapshot do portefólio incompleto.")
+        try:
+            initial_value = float(snapshot["initial_value"])
+            cash = float(snapshot["cash"])
+            peak_equity = float(snapshot["peak_equity"])
+            realized_pnl = float(snapshot["realized_pnl"])
+            fees_paid = float(snapshot["fees_paid"])
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError("Snapshot contém campos numéricos inválidos.") from error
+        if not all(isfinite(value) for value in (initial_value, cash, peak_equity, realized_pnl, fees_paid)):
+            raise ValueError("Snapshot contém valores não finitos.")
+        if min(initial_value, cash, peak_equity, fees_paid) < 0:
+            raise ValueError("Cash, capital inicial, high-water mark e comissões não podem ser negativos.")
+        raw_positions = snapshot["positions"]
+        if not isinstance(raw_positions, dict):
+            raise ValueError("positions tem de ser um objeto.")
+        positions: dict[str, Position] = {}
+        marks: dict[str, float] = {}
+        for symbol, raw in raw_positions.items():
+            if not isinstance(symbol, str) or not symbol or not isinstance(raw, dict):
+                raise ValueError("Posição inválida no snapshot.")
+            try:
+                quantity = float(raw["quantity"])
+                average = float(raw["average_entry_price"])
+                mark = float(raw["mark_price"])
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                raise ValueError("Campos da posição inválidos.") from error
+            if any(not isfinite(value) or value <= 0 for value in (quantity, average, mark)):
+                raise ValueError("Quantidade e preços da posição têm de ser positivos e finitos.")
+            positions[symbol] = Position(quantity, average)
+            marks[symbol] = mark
+        portfolio = cls(initial_value=initial_value)
+        portfolio.cash = cash
+        portfolio.peak_equity = peak_equity
+        portfolio._realized_pnl = realized_pnl
+        portfolio.fees_paid = fees_paid
+        portfolio.positions = positions
+        portfolio.marks = marks
+        if not isfinite(portfolio.total_value) or portfolio.peak_equity < portfolio.total_value:
+            raise ValueError("Snapshot inconsistente: equity inválida face ao high-water mark.")
+        return portfolio
